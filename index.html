@@ -1,0 +1,1479 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JORNALYZE — Jurnal Trading Otomatis | Trading Rapi, Konsisten, Ga Asal Entry</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gold: { 300: '#fde68a', 400: '#f59e0b', 500: '#d97706', 600: '#b45309' },
+            dark: { 900: '#0a0a0a', 800: '#111111', 700: '#1a1a1a', 600: '#222222', 500: '#2a2a2a' }
+          },
+          fontFamily: {
+            bebas: ['Bebas Neue', 'cursive'],
+            syne: ['Syne', 'sans-serif'],
+            inter: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { scroll-behavior: smooth; }
+    body { background: #0a0a0a; font-family: 'Inter', sans-serif; }
+
+    .gold-gradient { background: linear-gradient(135deg, #f59e0b, #fde68a, #d97706); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .gold-bg { background: linear-gradient(135deg, #f59e0b 0%, #fde68a 50%, #d97706 100%); }
+    .hero-bg { background: radial-gradient(ellipse at 70% 30%, rgba(245,158,11,0.12) 0%, transparent 60%), radial-gradient(ellipse at 20% 80%, rgba(245,158,11,0.07) 0%, transparent 50%), #0a0a0a; }
+    .card-glow { border: 1px solid rgba(245,158,11,0.2); box-shadow: 0 0 30px rgba(245,158,11,0.05), inset 0 1px 0 rgba(245,158,11,0.1); }
+    .cta-btn { background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 50%, #d97706 100%); transition: all 0.3s ease; box-shadow: 0 4px 20px rgba(245,158,11,0.4); }
+    .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(245,158,11,0.6); }
+    .reveal { opacity: 0; transform: translateY(30px); transition: all 0.6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .noise-overlay::before { content:''; position:absolute; inset:0; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E"); pointer-events:none; z-index:0; }
+    .sticky-cta { display: none; }
+    @media (max-width: 768px) { .sticky-cta { display: flex; } }
+    .price-strike { text-decoration: line-through; text-decoration-color: rgba(245,158,11,0.5); }
+    .testimonial-card { border: 1px solid rgba(245,158,11,0.15); background: linear-gradient(135deg, rgba(245,158,11,0.05), rgba(0,0,0,0.8)); }
+    .grid-line { background-image: linear-gradient(rgba(245,158,11,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(245,158,11,0.04) 1px, transparent 1px); background-size: 50px 50px; }
+    .pill { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); }
+    .number-badge { background: linear-gradient(135deg, #f59e0b, #d97706); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; color: #000; flex-shrink: 0; }
+
+    /* ══════ JOURNAL MOCKUP V6-STYLE CSS ══════ */
+    :root {
+      --jmv-bg:#080808; --jmv-bg2:#0E0E0E; --jmv-bg3:#141414; --jmv-bg4:#1C1C1C;
+      --jmv-gold:#C9A84C; --jmv-gold2:#E8C567; --jmv-gold3:#F5D87A;
+      --jmv-gold-bg:rgba(201,168,76,0.06); --jmv-gold-bd:rgba(201,168,76,0.16); --jmv-gold-bd2:rgba(201,168,76,0.32);
+      --jmv-text:#F8F4EC; --jmv-text2:#C8C0B0; --jmv-text3:#6A6050;
+      --jmv-green:#22C55E; --jmv-green-bg:rgba(34,197,94,0.09); --jmv-green-bd:rgba(34,197,94,0.25);
+      --jmv-red:#E84040; --jmv-red-bg:rgba(232,64,64,0.09); --jmv-red-bd:rgba(232,64,64,0.25);
+      --jmv-border:rgba(201,168,76,0.12); --jmv-border2:rgba(255,255,255,0.05);
+      --jmv-row-alt:rgba(255,255,255,0.018); --jmv-row-hover:rgba(201,168,76,0.05);
+    }
+    .jm-app-outer{width:100%;height:620px;overflow:hidden;background:var(--jmv-bg);display:flex;flex-direction:column;position:relative;}
+    .jmv-topbar{background:var(--jmv-bg2);border-bottom:1px solid var(--jmv-border);padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:52px;flex-shrink:0;gap:8px;}
+    .jmv-brand{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--jmv-gold2);}
+    .jmv-brand em{font-style:italic;color:var(--jmv-gold3);}
+    .jmv-brand-tag{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--jmv-text3);margin-left:4px;}
+    .jmv-page-tabs{display:flex;gap:2px;overflow-x:auto;flex:1;justify-content:center;}
+    .jmv-page-tabs::-webkit-scrollbar{display:none;}
+    .jmv-ptab{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.8px;text-transform:uppercase;padding:5px 11px;border-radius:5px;cursor:pointer;border:1px solid transparent;background:transparent;color:var(--jmv-text3);transition:all .2s;white-space:nowrap;}
+    .jmv-ptab:hover{color:var(--jmv-text2);background:var(--jmv-bg4);}
+    .jmv-ptab.active{background:var(--jmv-gold-bg);border-color:var(--jmv-gold-bd);color:var(--jmv-gold2);}
+    .jmv-theme-pill{display:flex;background:var(--jmv-bg4);border:1px solid var(--jmv-border);border-radius:99px;padding:2px;gap:1px;flex-shrink:0;}
+    .jmv-topt{padding:4px 9px;border-radius:99px;font-size:10px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--jmv-text3);font-family:'Outfit',sans-serif;}
+    .jmv-topt.active{background:var(--jmv-bg2);color:var(--jmv-text);}
+    .jmv-page{display:none;flex:1;overflow-y:auto;animation:jmvFadeUp .25s ease;}
+    .jmv-page.active{display:block;}
+    @keyframes jmvFadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+    .jmv-page::-webkit-scrollbar{width:3px;}
+    .jmv-page::-webkit-scrollbar-thumb{background:var(--jmv-gold-bd);border-radius:99px;}
+    .jmv-main{max-width:1200px;margin:0 auto;padding:20px 20px 60px;}
+    .jmv-ph{margin-bottom:20px;display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid var(--jmv-border);padding-bottom:14px;gap:12px;flex-wrap:wrap;}
+    .jmv-ph-label{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--jmv-gold);margin-bottom:5px;}
+    .jmv-ph-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;line-height:1.1;color:var(--jmv-text);}
+    .jmv-ph-title em{font-style:italic;color:var(--jmv-gold3);}
+    .jmv-ph-sub{font-size:12px;color:var(--jmv-text3);margin-top:3px;line-height:1.5;}
+    .jmv-btn-gold{background:linear-gradient(135deg,#C9A84C,#E8C567);color:#000;font-weight:700;font-size:12px;padding:8px 18px;border:none;border-radius:7px;cursor:pointer;white-space:nowrap;font-family:'Outfit',sans-serif;}
+    .jmv-btn-ghost{background:var(--jmv-bg4);border:1px solid var(--jmv-border);color:var(--jmv-text2);font-size:12px;padding:8px 14px;border-radius:7px;cursor:pointer;font-family:'Outfit',sans-serif;}
+    .jmv-box{background:var(--jmv-bg2);border:1px solid var(--jmv-border);border-radius:12px;overflow:hidden;margin-bottom:14px;}
+    .jmv-box-head{background:var(--jmv-gold-bg);border-bottom:1px solid var(--jmv-gold-bd);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+    .jmv-box-title{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--jmv-gold2);}
+    .jmv-box-body{padding:14px 16px;}
+    .jmv-g12{display:grid;grid-template-columns:1.05fr .95fr;gap:16px;align-items:start;}
+    .jmv-g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+    .jmv-frow{margin-bottom:12px;}
+    .jmv-flabel{display:block;font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--jmv-text3);margin-bottom:5px;letter-spacing:.3px;}
+    .jmv-fwrap{display:flex;align-items:center;background:rgba(255,255,255,0.03);border:1px solid var(--jmv-border2);border-radius:7px;overflow:hidden;}
+    .jmv-fpre{padding:0 10px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--jmv-text3);background:rgba(255,255,255,0.02);border-right:1px solid var(--jmv-border2);height:38px;display:flex;align-items:center;}
+    .jmv-finput{flex:1;padding:8px 12px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--jmv-text);background:transparent;min-height:38px;display:flex;align-items:center;}
+    .jmv-fselect-wrap{background:rgba(255,255,255,0.03);border:1px solid var(--jmv-border2);border-radius:7px;overflow:hidden;}
+    .jmv-fselect{padding:9px 12px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--jmv-text);}
+    .jmv-rtable{font-size:12px;}
+    .jmv-rrow{display:flex;align-items:center;justify-content:space-between;padding:9px 16px;border-bottom:1px solid rgba(255,255,255,0.03);}
+    .jmv-rrow:last-child{border-bottom:none;}
+    .jmv-rlbl{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--jmv-text3);}
+    .jmv-rval{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--jmv-text);}
+    .jmv-stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+    .jmv-scard{background:var(--jmv-bg2);border:1px solid var(--jmv-border);border-radius:10px;padding:12px 14px;}
+    .jmv-scard-lbl{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--jmv-text3);margin-bottom:5px;}
+    .jmv-scard-val{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--jmv-text);}
+    .jmv-tbl-scroll{overflow-x:auto;}
+    .jmv-tbl-scroll::-webkit-scrollbar{height:3px;}
+    .jmv-tbl-scroll::-webkit-scrollbar-thumb{background:var(--jmv-gold-bd);}
+    .jmv-dtable{width:100%;border-collapse:collapse;font-size:11px;font-family:'JetBrains Mono',monospace;white-space:nowrap;}
+    .jmv-dtable th{background:var(--jmv-bg3);color:var(--jmv-gold2);padding:8px 10px;text-align:left;border-bottom:1px solid var(--jmv-gold-bd);font-size:8px;letter-spacing:1px;text-transform:uppercase;font-weight:700;}
+    .jmv-dtable td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.03);color:var(--jmv-text2);}
+    .jmv-row-alt td{background:var(--jmv-row-alt);}
+    .jmv-dtable tr:hover td{background:var(--jmv-row-hover);}
+    .jmv-badge-win{background:var(--jmv-green-bg);color:var(--jmv-green);border:1px solid var(--jmv-green-bd);font-size:9px;padding:2px 7px;border-radius:4px;font-weight:700;}
+    .jmv-badge-loss{background:var(--jmv-red-bg);color:var(--jmv-red);border:1px solid var(--jmv-red-bd);font-size:9px;padding:2px 7px;border-radius:4px;font-weight:700;}
+    .jmv-green{color:var(--jmv-green)!important;} .jmv-red{color:var(--jmv-red)!important;} .jmv-gold{color:var(--jmv-gold2)!important;}
+    .jmv-flt-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+    .jmv-flt-scard{background:var(--jmv-bg2);border:1px solid var(--jmv-border);border-radius:9px;padding:9px 10px;}
+    .jmv-flt-green{border-color:var(--jmv-green-bd);} .jmv-flt-red{border-color:var(--jmv-red-bd);} .jmv-flt-gold{border-color:var(--jmv-gold-bd);}
+    .jmv-flt-lbl{font-family:'JetBrains Mono',monospace;font-size:7.5px;letter-spacing:1px;text-transform:uppercase;color:var(--jmv-text3);margin-bottom:3px;}
+    .jmv-flt-val{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:var(--jmv-text);}
+    .jmv-legend{display:flex;flex-direction:column;gap:8px;}
+    .jmv-leg-item{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--jmv-text2);}
+    .jmv-leg-item span{width:10px;height:10px;border-radius:50%;flex-shrink:0;display:inline-block;}
+    .jmv-kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+    .jmv-kpi{background:var(--jmv-bg2);border:1px solid var(--jmv-border);border-radius:10px;padding:12px;text-align:center;}
+    .jmv-kpi-green{border-color:var(--jmv-green-bd);} .jmv-kpi-gold{border-color:var(--jmv-gold-bd);} .jmv-kpi-red{border-color:var(--jmv-red-bd);}
+    .jmv-kpi-lbl{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:1px;text-transform:uppercase;color:var(--jmv-text3);margin-bottom:5px;}
+    .jmv-kpi-val{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--jmv-text);}
+    @media(max-width:720px){
+      .jm-app-outer{height:520px;}
+      .jmv-page-tabs{display:none;}
+      .jmv-g12{grid-template-columns:1fr;}
+      .jmv-g2{grid-template-columns:1fr;}
+      .jmv-stat-row{grid-template-columns:repeat(2,1fr);}
+      .jmv-flt-stats{grid-template-columns:repeat(2,1fr);}
+      .jmv-kpi-grid{grid-template-columns:repeat(2,1fr);}
+    }
+
+    /* JOURNAL LOCK OVERLAY */
+    .jm-lock-overlay{position:absolute;bottom:0;left:0;right:0;height:52%;background:linear-gradient(to bottom, transparent 0%, rgba(8,8,8,0.92) 30%, rgba(8,8,8,0.98) 100%);display:flex;align-items:flex-end;justify-content:center;padding-bottom:28px;pointer-events:all;z-index:10;}
+    .jm-lock-content{text-align:center;padding:0 24px;max-width:480px;width:100%;}
+    .jm-lock-icon{font-size:28px;margin-bottom:8px;display:block;}
+    .jm-lock-title{font-family:'Cormorant Garamond',serif;font-size:clamp(16px,2.5vw,22px);font-weight:700;color:#fff;margin-bottom:12px;line-height:1.3;}
+    .jm-lock-list{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 12px;margin-bottom:18px;}
+    .jm-lock-list span{font-size:12px;color:#C4BBa8;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:5px 12px;white-space:nowrap;}
+    .jm-lock-btn{display:inline-block;background:linear-gradient(135deg,#C9A84C,#E8C567);color:#000;font-weight:900;font-size:14px;padding:14px 32px;border-radius:8px;text-decoration:none;transition:all 0.2s;letter-spacing:0.2px;}
+    .jm-lock-btn:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(201,168,76,0.4);}
+
+    /* DEMO BAR */
+    .jm-demo-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.18);border-radius:10px;padding:10px 16px;margin-bottom:14px;}
+    .jm-demo-badge{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:1.5px;color:#E8C567;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.25);padding:4px 10px;border-radius:5px;white-space:nowrap;flex-shrink:0;}
+    .jm-demo-info{font-size:12px;color:#6A6258;line-height:1.5;}
+
+    /* JM TAB PILLS */
+    .jm-tabs{display:flex;justify-content:center;gap:6px;margin-bottom:16px;flex-wrap:wrap;}
+    .jm-tab{background:#141414;border:1px solid rgba(201,168,76,0.12);color:#C4BBa8;font-size:12px;font-weight:600;padding:9px 16px;border-radius:7px;cursor:pointer;transition:all 0.2s;font-family:'Outfit',sans-serif;}
+    .jm-tab.active{background:rgba(201,168,76,0.09);border-color:#C9A84C;color:#E8C567;}
+    .jm-tab:hover:not(.active){border-color:rgba(201,168,76,0.22);color:#F8F4EC;}
+
+    /* JM CAPTION */
+    .jm-caption{background:#0E0E0E;border:1px solid rgba(201,168,76,0.12);border-radius:10px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:flex-start;gap:12px;font-size:13.5px;color:#C4BBa8;line-height:1.7;}
+    .jm-cap-text strong{color:#E8C567;}
+
+    /* JM BROWSER */
+    .jm-browser{background:#111;border-radius:14px 14px 0 0;border:2px solid #1e1e1e;overflow:hidden;}
+    .jm-chrome{background:#1a1a1a;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #222;}
+    .jm-chrome-dots{display:flex;gap:6px;align-items:center;}
+    .jm-dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0;}
+    .jm-chrome-url{flex:1;text-align:center;background:rgba(255,255,255,0.05);border-radius:5px;padding:5px 12px;font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.25);}
+    .jm-base{background:#161616;height:12px;border-radius:0 0 10px 10px;border:2px solid #1e1e1e;border-top:none;}
+    .jm-notch{width:25%;height:7px;background:#111;border-radius:0 0 10px 10px;margin:0 auto;border:2px solid #1e1e1e;border-top:none;}
+
+    /* WA TESTIMONIAL CARDS */
+    .wa-card{border-radius:14px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.6);}
+    .wa-top{padding:10px 12px;display:flex;align-items:center;gap:9px;background:#1F2C34;}
+    .wa-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;overflow:hidden;}
+    .wa-av img{width:100%;height:100%;object-fit:cover;}
+    .wa-info{flex:1;}
+    .wa-name{font-size:12.5px;font-weight:700;color:#fff;font-family:'Syne',sans-serif;}
+    .wa-status{font-size:9px;color:rgba(255,255,255,0.32);font-family:'Inter',sans-serif;}
+    .wa-icons{display:flex;gap:10px;font-size:14px;color:rgba(255,255,255,0.32);}
+    .wa-body{background:#0B141A;padding:12px 10px;display:flex;flex-direction:column;gap:8px;min-height:195px;}
+    .wa-stars{color:#F5C842;font-size:11px;margin-bottom:2px;}
+    .wa-in{background:#202C33;border-radius:0 10px 10px 10px;padding:9px 11px;max-width:88%;align-self:flex-start;position:relative;}
+    .wa-in::before{content:'';position:absolute;top:0;left:-6px;width:0;height:0;border-top:7px solid #202C33;border-left:7px solid transparent;}
+    .wa-out{background:#005C4B;border-radius:10px 0 10px 10px;padding:9px 11px;max-width:88%;align-self:flex-end;position:relative;}
+    .wa-out::before{content:'';position:absolute;top:0;right:-6px;width:0;height:0;border-top:7px solid #005C4B;border-right:7px solid transparent;}
+    .wa-txt{font-size:12.5px;line-height:1.6;color:rgba(255,255,255,0.85);font-family:'Inter',sans-serif;}
+    .wa-meta{display:flex;align-items:center;justify-content:flex-end;gap:3px;margin-top:3px;}
+    .wa-time{font-size:9px;color:rgba(255,255,255,0.28);}
+    .wa-chk{font-size:10px;color:#53BDEB;}
+    .wa-bot{padding:8px 12px;background:#1F2C34;display:flex;align-items:center;gap:7px;}
+    .wa-input-fake{flex:1;border-radius:18px;padding:6px 11px;font-size:10px;color:rgba(255,255,255,0.2);background:rgba(255,255,255,0.04);border:none;font-family:'Inter',sans-serif;}
+    .wa-send{width:28px;height:28px;background:#00A884;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;}
+
+    /* PHOTO AVATAR CIRCLES */
+    .av-photo{width:100%;height:100%;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#000;font-family:'Syne',sans-serif;}
+
+
+    /* ══ TESTI SLIDER ══ */
+    .testi-slider-wrap{max-width:520px;margin:0 auto;}
+    .testi-slider-outer{position:relative;}
+    .testi-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:10;width:36px;height:36px;border-radius:50%;background:rgba(10,10,10,0.75);border:1px solid rgba(245,158,11,0.3);color:rgba(245,158,11,0.9);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;backdrop-filter:blur(8px);}
+    .testi-arrow:hover{background:rgba(245,158,11,0.15);border-color:rgba(245,158,11,0.7);}
+    .testi-prev-btn{left:-18px;}
+    .testi-next-btn{right:-18px;}
+    .testi-dot-btn{width:8px;height:8px;border-radius:50%;border:none;background:rgba(255,255,255,0.18);cursor:pointer;padding:0;transition:all 0.25s;}
+    .testi-dot-btn.on{background:#f59e0b;transform:scale(1.25);}
+
+    /* ══ TOAST NOTIF PEMBELIAN ══ */
+    .vp-toast{position:fixed;bottom:18px;left:12px;background:rgba(10,10,10,0.90);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,0.09);border-radius:10px;padding:8px 28px 8px 8px;max-width:210px;z-index:9999;display:flex;align-items:center;gap:11px;transform:translateX(-340px);transition:transform 0.5s cubic-bezier(0.34,1.56,0.64,1);box-shadow:0 8px 32px rgba(0,0,0,0.65);}
+    .vp-toast.show{transform:translateX(0);}
+    .vp-close{position:absolute;top:8px;right:10px;font-size:12px;color:rgba(255,255,255,0.3);cursor:pointer;line-height:1;transition:color 0.2s;}
+    .vp-close:hover{color:rgba(255,255,255,0.7);}
+    .vp-img{width:32px;height:42px;border-radius:5px;overflow:hidden;flex-shrink:0;position:relative;background:linear-gradient(135deg,#1a1a1a,#111);}
+    .vp-chk{position:absolute;bottom:-3px;right:-3px;width:16px;height:16px;background:#22C55E;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff;border:2px solid rgba(10,10,10,0.9);font-weight:700;}
+    .vp-body{flex:1;min-width:0;}
+    .vp-lbl{font-size:9px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:0.5px;margin-bottom:3px;}
+    .vp-name{font-size:11px;font-weight:800;color:#fff;margin-bottom:1px;}
+    .vp-prod{font-size:10px;color:rgba(255,255,255,0.55);margin-bottom:3px;}
+    .vp-price-row{display:flex;align-items:center;justify-content:space-between;}
+    .vp-price{font-size:11px;font-weight:800;color:#E8C567;}
+    .vp-time{font-size:9px;color:rgba(255,255,255,0.3);}
+    .vp-bar{height:2px;background:rgba(255,255,255,0.08);border-radius:2px;margin-top:7px;overflow:hidden;}
+    .vp-fill{height:100%;background:linear-gradient(90deg,#22C55E,#E8C567);border-radius:2px;}
+
+    /* ══ WA AVATAR SVG ══ */
+    .wa-av-svg{width:30px;height:30px;border-radius:50%;flex-shrink:0;overflow:hidden;}
+
+    /* ══ FEATURE BADGES ══ */
+    .feat-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);color:#f59e0b;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;font-family:'JetBrains Mono',monospace;letter-spacing:0.5px;}
+    .feat-badge.green{background:rgba(34,197,94,0.08);border-color:rgba(34,197,94,0.25);color:#22C55E;}
+    .feat-badge.blue{background:rgba(96,165,250,0.08);border-color:rgba(96,165,250,0.25);color:#60a5fa;}
+  </style>
+</head>
+<body class="text-white">
+
+  <!-- ══ TOAST NOTIFIKASI PEMBELIAN ══ -->
+  <div class="vp-toast" id="vpToast">
+    <span class="vp-close" onclick="this.parentElement.classList.remove('show')">✕</span>
+    <div class="vp-img" id="vpImg">
+      <!-- SVG jurnal mini -->
+      <svg viewBox="0 0 42 56" width="32" height="42" xmlns="http://www.w3.org/2000/svg">
+        <rect width="42" height="56" rx="5" fill="#0E0E0E"/>
+        <rect x="3" y="3" width="36" height="50" rx="4" fill="#141414" stroke="#C9A84C" stroke-width="0.5"/>
+        <rect x="6" y="6" width="30" height="8" rx="2" fill="#C9A84C" opacity="0.15"/>
+        <text x="21" y="13" text-anchor="middle" font-family="monospace" font-size="5" fill="#C9A84C" font-weight="bold">JORNALYZE</text>
+        <rect x="6" y="17" width="18" height="1.5" rx="1" fill="#333"/>
+        <rect x="6" y="21" width="14" height="1.5" rx="1" fill="#22C55E" opacity="0.7"/>
+        <rect x="6" y="25" width="22" height="1.5" rx="1" fill="#333"/>
+        <rect x="6" y="29" width="16" height="1.5" rx="1" fill="#E84040" opacity="0.6"/>
+        <rect x="6" y="33" width="20" height="1.5" rx="1" fill="#333"/>
+        <rect x="6" y="37" width="12" height="1.5" rx="1" fill="#22C55E" opacity="0.7"/>
+        <rect x="6" y="42" width="30" height="7" rx="2" fill="#C9A84C" opacity="0.1"/>
+        <text x="21" y="48" text-anchor="middle" font-family="monospace" font-size="4" fill="#C9A84C">Rp 147.000</text>
+      </svg>
+      <div class="vp-chk">✓</div>
+    </div>
+    <div class="vp-body">
+      <div class="vp-lbl">baru saja membeli</div>
+      <div class="vp-name" id="vpName">Ri** · Surabaya</div>
+      <div class="vp-prod"><strong style="color:#fff;">JORNALYZE</strong> — Jurnal Trading</div>
+      <div class="vp-price-row">
+        <span class="vp-price">Rp 147.000</span>
+        <span class="vp-time" id="vpTime">2 menit lalu</span>
+      </div>
+      <div class="vp-bar"><div class="vp-fill" id="vpFill"></div></div>
+    </div>
+  </div>
+
+  <!-- STICKY TOP BAR -->
+  <div class="fixed top-0 w-full z-50 bg-dark-900/95 backdrop-blur-md border-b border-gold-400/10">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="font-bebas text-xl tracking-widest gold-gradient">JORNALYZE</div>
+      <a href="#order" class="cta-btn text-black font-syne font-800 text-sm px-5 py-2 rounded-full hidden md:inline-block" style="font-weight:700">
+        Dapatkan Akses Sekarang →
+      </a>
+      <div id="timer-mini" class="text-xs font-inter text-gold-400 font-semibold md:hidden">
+        ⏰ <span id="m2">23</span>:<span id="s2">59</span> tersisa
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO SECTION -->
+  <section class="hero-bg noise-overlay relative min-h-screen flex items-center pt-20 pb-16 overflow-hidden">
+    <div class="grid-line absolute inset-0 opacity-50"></div>
+    <div class="max-w-6xl mx-auto px-4 relative z-10">
+      <div class="grid md:grid-cols-2 gap-12 items-center">
+        <div>
+          <div class="pill inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6">
+            <div class="w-2 h-2 rounded-full bg-gold-400 animate-pulse"></div>
+            <span class="text-gold-400 text-sm font-syne font-semibold">Jurnal Trading Otomatis #1</span>
+          </div>
+          <h1 class="font-bebas leading-none mb-4">
+            <span class="block text-6xl md:text-8xl text-white tracking-wider">TRADING LO</span>
+            <span class="block text-6xl md:text-8xl gold-gradient tracking-wider">RAPI. KONSISTEN.</span>
+            <span class="block text-5xl md:text-7xl text-white/80 tracking-wider">GA ASAL ENTRY.</span>
+          </h1>
+          <p class="font-inter text-white/60 text-lg mb-8 max-w-md leading-relaxed">
+            Stop trading nebak-nebak. Semua data tercatat otomatis, performa keliatan jelas — dan lo akhirnya bisa <strong class="text-gold-400">berkembang sebagai trader.</strong>
+          </p>
+          <div class="flex flex-wrap gap-4 mb-8">
+            <div class="flex items-center gap-2 text-white/70 text-sm">
+              <svg class="w-4 h-4 text-gold-400" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>
+              Semua Data Tercatat
+            </div>
+            <div class="flex items-center gap-2 text-white/70 text-sm">
+              <svg class="w-4 h-4 text-gold-400" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>
+              Performa Keliatan Jelas
+            </div>
+            <div class="flex items-center gap-2 text-white/70 text-sm">
+              <svg class="w-4 h-4 text-gold-400" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>
+              Free Update Seumur Hidup
+            </div>
+          </div>
+
+          <!-- COUNTDOWN -->
+          <div class="card-glow rounded-2xl p-4 mb-8 bg-dark-800/80 inline-block">
+            <p class="text-xs text-white/50 font-inter mb-2 uppercase tracking-widest">⚡ Harga Spesial Berakhir Dalam</p>
+            <div class="flex gap-3 items-center">
+              <div class="text-center">
+                <div id="hours" class="font-bebas text-3xl text-gold-400">23</div>
+                <div class="text-xs text-white/40 font-inter">JAM</div>
+              </div>
+              <div class="font-bebas text-2xl text-gold-400/50">:</div>
+              <div class="text-center">
+                <div id="minutes" class="font-bebas text-3xl text-gold-400">59</div>
+                <div class="text-xs text-white/40 font-inter">MENIT</div>
+              </div>
+              <div class="font-bebas text-2xl text-gold-400/50">:</div>
+              <div class="text-center">
+                <div id="seconds" class="font-bebas text-3xl text-gold-400">00</div>
+                <div class="text-xs text-white/40 font-inter">DETIK</div>
+              </div>
+            </div>
+          </div>
+
+          <button class="cta-btn text-black font-syne font-bold text-lg px-8 py-4 rounded-2xl text-center w-full md:w-auto" onclick="document.getElementById('order').scrollIntoView({behavior:'smooth'})">
+            🚀 Mulai Sekarang, Bukan Nanti
+          </button>
+          <p class="text-white/30 text-xs mt-3 font-inter">✓ Akses langsung setelah pembayaran · ✓ Tanpa langganan bulanan</p>
+        </div>
+
+        <!-- HERO VISUAL -->
+        <div class="relative">
+          <div class="absolute -inset-4 rounded-3xl opacity-30" style="background: radial-gradient(ellipse, rgba(245,158,11,0.3), transparent 70%)"></div>
+          <div class="card-glow rounded-3xl overflow-hidden bg-dark-800/60 backdrop-blur">
+            <div class="bg-dark-700/80 px-4 py-3 flex items-center gap-2 border-b border-gold-400/10">
+              <div class="w-3 h-3 rounded-full bg-red-500/70"></div>
+              <div class="w-3 h-3 rounded-full bg-yellow-500/70"></div>
+              <div class="w-3 h-3 rounded-full bg-green-500/70"></div>
+              <span class="text-white/40 text-xs font-inter ml-2">JORNALYZE — Dashboard Trader</span>
+            </div>
+            <div class="p-6">
+              <div class="mb-4">
+                <p class="text-white/40 text-xs font-inter uppercase tracking-widest mb-2">Manajemen Risiko Trading</p>
+                <div class="grid grid-cols-2 gap-3 mb-3">
+                  <div class="bg-dark-700/60 rounded-xl p-3">
+                    <p class="text-white/30 text-xs mb-1">Modal Awal</p>
+                    <p class="text-gold-400 font-syne font-bold text-lg">Rp 5.000.000</p>
+                  </div>
+                  <div class="bg-dark-700/60 rounded-xl p-3">
+                    <p class="text-white/30 text-xs mb-1">Win Rate</p>
+                    <p class="text-green-400 font-syne font-bold text-lg">68.4%</p>
+                  </div>
+                  <div class="bg-dark-700/60 rounded-xl p-3">
+                    <p class="text-white/30 text-xs mb-1">Risk per Trade</p>
+                    <p class="text-white font-syne font-bold">1%</p>
+                  </div>
+                  <div class="bg-dark-700/60 rounded-xl p-3">
+                    <p class="text-white/30 text-xs mb-1">Profit Bulan Ini</p>
+                    <p class="text-green-400 font-syne font-bold">+Rp 840K</p>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-dark-700/40 rounded-xl p-4">
+                <p class="text-white/30 text-xs mb-3">Equity Curve — 30 Hari Terakhir</p>
+                <svg viewBox="0 0 280 80" class="w-full" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.4"/>
+                      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+                    </linearGradient>
+                  </defs>
+                  <path d="M0,70 L20,65 L40,60 L60,55 L80,50 L100,45 L120,40 L140,45 L160,35 L180,25 L200,20 L220,15 L240,10 L260,8 L280,5" stroke="#f59e0b" stroke-width="2" fill="none"/>
+                  <path d="M0,70 L20,65 L40,60 L60,55 L80,50 L100,45 L120,40 L140,45 L160,35 L180,25 L200,20 L220,15 L240,10 L260,8 L280,5 L280,80 L0,80 Z" fill="url(#chartGrad)"/>
+                </svg>
+              </div>
+              <div class="mt-4 space-y-2">
+                <div class="flex items-center justify-between bg-green-500/10 border border-green-500/20 rounded-lg px-3 py-2">
+                  <span class="text-xs text-white/60 font-inter">EUR/USD · Long</span>
+                  <span class="text-xs text-green-400 font-syne font-bold">+2.3R ✓</span>
+                </div>
+                <div class="flex items-center justify-between bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
+                  <span class="text-xs text-white/60 font-inter">GBP/JPY · Short</span>
+                  <span class="text-xs text-red-400 font-syne font-bold">-1R ✗</span>
+                </div>
+                <div class="flex items-center justify-between bg-green-500/10 border border-green-500/20 rounded-lg px-3 py-2">
+                  <span class="text-xs text-white/60 font-inter">XAU/USD · Long</span>
+                  <span class="text-xs text-green-400 font-syne font-bold">+3.1R ✓</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROBLEM SECTION -->
+  <section class="py-20 bg-dark-800 relative overflow-hidden">
+    <div class="max-w-4xl mx-auto px-4 text-center">
+      <div class="reveal">
+        <p class="text-gold-400 font-syne font-semibold uppercase tracking-widest text-sm mb-4">Kenyataan Pahit Trader Pemula</p>
+        <h2 class="font-bebas text-5xl md:text-6xl text-white mb-6 tracking-wide">LO PERNAH NGALAMIN INI?</h2>
+      </div>
+      <div class="grid md:grid-cols-3 gap-6 mt-12">
+        <div class="reveal card-glow bg-dark-700/40 rounded-2xl p-6 text-left">
+          <div class="text-3xl mb-3">😤</div>
+          <h3 class="font-syne font-bold text-white mb-2">Emosi saat Trading</h3>
+          <p class="text-white/50 font-inter text-sm leading-relaxed">Entry FOMO, cut loss terlambat, revenge trading — karena ga ada data yang ngasih lo feedback objektif.</p>
+        </div>
+        <div class="reveal card-glow bg-dark-700/40 rounded-2xl p-6 text-left" style="transition-delay:0.1s">
+          <div class="text-3xl mb-3">📉</div>
+          <h3 class="font-syne font-bold text-white mb-2">Ga Tau Kenapa Loss</h3>
+          <p class="text-white/50 font-inter text-sm leading-relaxed">Ga punya jurnal = ga bisa evaluasi. Lo ngulang kesalahan yang sama berulang-ulang tanpa sadar.</p>
+        </div>
+        <div class="reveal card-glow bg-dark-700/40 rounded-2xl p-6 text-left" style="transition-delay:0.2s">
+          <div class="text-3xl mb-3">🤯</div>
+          <h3 class="font-syne font-bold text-white mb-2">Jurnal Manual Ribet</h3>
+          <p class="text-white/50 font-inter text-sm leading-relaxed">Udah coba Excel manual tapi males ngisi, formatnya berantakan, dan lo akhirnya berhenti setelah 3 hari.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOLUTION / PRODUCT REVEAL -->
+  <section class="py-24 hero-bg relative">
+    <div class="max-w-5xl mx-auto px-4">
+      <div class="text-center mb-16 reveal">
+        <p class="text-gold-400 font-syne font-semibold uppercase tracking-widest text-sm mb-4">Solusinya Ada</p>
+        <h2 class="font-bebas text-5xl md:text-7xl tracking-wide mb-6">
+          <span class="text-white">KENALKAN </span>
+          <span class="gold-gradient">JORNALYZE</span>
+        </h2>
+        <p class="text-white/60 font-inter text-lg max-w-2xl mx-auto">Jurnal trading otomatis yang dirancang untuk bikin lo disiplin, terukur, dan berkembang — tanpa ribet manual satu persatu.</p>
+      </div>
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="reveal card-glow bg-dark-800/80 rounded-3xl p-8 flex gap-5">
+          <div class="text-3xl">🌐</div>
+          <div>
+            <div class="flex gap-2 flex-wrap mb-2">
+              <span class="feat-badge blue">WEB APP</span>
+            </div>
+            <h3 class="font-syne font-bold text-white text-lg mb-2">Versi Web — Buka dari Mana Saja</h3>
+            <p class="text-white/50 font-inter text-sm leading-relaxed">Bukan cuma Google Sheets biasa. Jornalyze hadir sebagai <strong class="text-white/80">web app</strong> — bisa dibuka dari browser HP atau laptop, tanpa install, tanpa ribet.</p>
+          </div>
+        </div>
+        <div class="reveal card-glow bg-dark-800/80 rounded-3xl p-8 flex gap-5" style="transition-delay:0.1s">
+          <div class="text-3xl">📸</div>
+          <div>
+            <div class="flex gap-2 flex-wrap mb-2">
+              <span class="feat-badge green">ZERO MANUAL INPUT</span>
+            </div>
+            <h3 class="font-syne font-bold text-white text-lg mb-2">Foto MT5 → Data Masuk Otomatis</h3>
+            <p class="text-white/50 font-inter text-sm leading-relaxed">Cukup <strong class="text-white/80">foto screenshot MT5 lo</strong>, sistem langsung baca dan input semua data trade — pair, entry, exit, lot, P/L — tanpa ketik satu angka pun.</p>
+          </div>
+        </div>
+        <div class="reveal card-glow bg-dark-800/80 rounded-3xl p-8 flex gap-5" style="transition-delay:0.15s">
+          <div class="text-3xl">⚖️</div>
+          <div>
+            <div class="flex gap-2 flex-wrap mb-2">
+              <span class="feat-badge">OTOMATIS</span>
+            </div>
+            <h3 class="font-syne font-bold text-white text-lg mb-2">Manajemen Risiko — 100% Otomatis</h3>
+            <p class="text-white/50 font-inter text-sm leading-relaxed">Input modal & profil risiko lo sekali. Sistem langsung hitung <strong class="text-white/80">lot ideal, max loss per hari, max drawdown, dan value per pip</strong> — update real-time setiap trade.</p>
+          </div>
+        </div>
+        <div class="reveal card-glow bg-dark-800/80 rounded-3xl p-8 flex gap-5" style="transition-delay:0.2s">
+          <div class="text-3xl">🎯</div>
+          <div>
+            <div class="flex gap-2 flex-wrap mb-2">
+              <span class="feat-badge">OTOMATIS</span>
+            </div>
+            <h3 class="font-syne font-bold text-white text-lg mb-2">Trading Plan Otomatis Sesuai Profil Lo</h3>
+            <p class="text-white/50 font-inter text-sm leading-relaxed">Bukan plan generik. Sistem generate <strong class="text-white/80">trading plan harian yang menyesuaikan profil risiko, modal, target, dan histori trade lo</strong> — personal untuk setiap trader.</p>
+          </div>
+        </div>
+        <div class="reveal card-glow bg-dark-800/80 rounded-3xl p-8 flex gap-5" style="transition-delay:0.25s">
+          <div class="text-3xl">📊</div>
+          <div>
+            <h3 class="font-syne font-bold text-white text-lg mb-2">Performa Keliatan Jelas</h3>
+            <p class="text-white/50 font-inter text-sm leading-relaxed">Dashboard visual yang langsung nunjukin win rate, risk/reward, drawdown, dan equity curve lo secara real-time.</p>
+          </div>
+        </div>
+        <div class="reveal card-glow bg-dark-800/80 rounded-3xl p-8 flex gap-5" style="transition-delay:0.3s">
+          <div class="text-3xl">🔄</div>
+          <div>
+            <h3 class="font-syne font-bold text-white text-lg mb-2">Free Update Seumur Hidup</h3>
+            <p class="text-white/50 font-inter text-sm leading-relaxed">Bayar sekali, dapat update terus. Fitur baru, template baru, perbaikan — semua gratis untuk lo.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ INTERACTIVE MOCKUP SECTION ══════ -->
+  <section class="py-24 bg-dark-800" id="mockup">
+    <div class="max-w-5xl mx-auto px-4">
+      <div class="text-center mb-12 reveal">
+        <p class="text-gold-400 font-syne font-semibold uppercase tracking-widest text-sm mb-4">Lihat Langsung Produknya</p>
+        <h2 class="font-bebas text-5xl md:text-6xl tracking-wide mb-4">
+          <span class="text-white">INI TAMPILANNYA. </span><span class="gold-gradient">ASLI.</span>
+        </h2>
+        <p class="text-white/60 font-inter text-lg max-w-2xl mx-auto">Coba semua tab — lo lagi lihat langsung Jornalyze yang beneran. Bukan mockup asal-asalan.</p>
+      </div>
+
+      <div class="reveal">
+        <!-- DEMO BAR -->
+        <div class="jm-demo-bar">
+          <span class="jm-demo-badge">📋 CONTOH JURNAL</span>
+          <span class="jm-demo-info">Preview fitur dasar — fitur lengkap tersedia setelah pembelian</span>
+        </div>
+
+        <!-- TAB PILLS -->
+        <div class="jm-tabs">
+          <button class="jm-tab active" onclick="jmSwitch('risk',this)">⚖️ Risiko</button>
+          <button class="jm-tab" onclick="jmSwitch('plan',this)">📅 Plan</button>
+          <button class="jm-tab" onclick="jmSwitch('data',this)">📋 Data</button>
+          <button class="jm-tab" onclick="jmSwitch('filter',this)">🔍 Filter</button>
+          <button class="jm-tab" onclick="jmSwitch('monthly',this)">📊 Bulanan</button>
+        </div>
+
+        <!-- CAPTION -->
+        <div class="jm-caption">
+          <span style="font-size:20px;flex-shrink:0;margin-top:2px;" id="jmCapIcon">⚖️</span>
+          <span class="jm-cap-text" id="jmCapText"><strong>Masalah yang diselesaikan:</strong> Lo nggak tahu harus pakai lot berapa dan SL sampai mana buat akun lo. Jawab 5 pertanyaan — semua langsung terhitung. <strong>Nggak perlu nebak-nebak lagi.</strong></span>
+        </div>
+
+        <!-- BROWSER CHROME -->
+        <div class="jm-browser">
+          <div class="jm-chrome">
+            <div class="jm-chrome-dots">
+              <span class="jm-dot" style="background:#FF5F57"></span>
+              <span class="jm-dot" style="background:#FFBD2E"></span>
+              <span class="jm-dot" style="background:#28CA41"></span>
+            </div>
+            <div class="jm-chrome-url">journalyze.app — Jurnal Trading Otomatis</div>
+            <div style="width:44px"></div>
+          </div>
+
+          <!-- APP CONTAINER -->
+          <div class="jm-app-outer" id="jmAppOuter">
+            <!-- TOPBAR -->
+            <nav class="jmv-topbar">
+              <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+                <div class="jmv-brand">Journal<em>yze</em></div>
+                <div class="jmv-brand-tag">Suite</div>
+              </div>
+              <div class="jmv-page-tabs">
+                <button class="jmv-ptab active" onclick="jmSwitch('risk',document.querySelectorAll('.jm-tab')[0])">⚖️ Risiko</button>
+                <button class="jmv-ptab" onclick="jmSwitch('plan',document.querySelectorAll('.jm-tab')[1])">📅 Plan</button>
+                <button class="jmv-ptab" onclick="jmSwitch('data',document.querySelectorAll('.jm-tab')[2])">📋 Data</button>
+                <button class="jmv-ptab" onclick="jmSwitch('filter',document.querySelectorAll('.jm-tab')[3])">🔍 Filter</button>
+                <button class="jmv-ptab" onclick="jmSwitch('monthly',document.querySelectorAll('.jm-tab')[4])">📊 Bulanan</button>
+              </div>
+              <div class="jmv-theme-pill">
+                <button class="jmv-topt active">🌙 Dark</button>
+                <button class="jmv-topt">☀️ Light</button>
+              </div>
+            </nav>
+
+            <!-- PAGE: RISK -->
+            <div class="jmv-page active" id="jmvp-risk">
+              <div class="jmv-main">
+                <div class="jmv-ph">
+                  <div>
+                    <div class="jmv-ph-label">⚖️ Modul 01 — Manajemen Risiko</div>
+                    <h2 class="jmv-ph-title">Profil Risiko & <em>Kalkulator</em></h2>
+                    <p class="jmv-ph-sub">Jawab 5 pertanyaan. Semua rekomendasi dihitung otomatis.</p>
+                  </div>
+                  <button class="jmv-btn-gold">⚡ Hitung Sekarang</button>
+                </div>
+                <div class="jmv-g12">
+                  <div class="jmv-box">
+                    <div class="jmv-box-head"><span class="jmv-box-title">📝 Pertanyaan</span><span class="jmv-box-title" style="color:#F5D87A">Jawab Disini!</span></div>
+                    <div class="jmv-box-body">
+                      <div class="jmv-frow"><label class="jmv-flabel">1. Saldo awal yang ingin kamu gunakan untuk trading?</label><div class="jmv-fwrap"><span class="jmv-fpre">Rp</span><div class="jmv-finput">3.000.000</div></div></div>
+                      <div class="jmv-frow"><label class="jmv-flabel">2. Risiko yang siap kamu tanggung di setiap transaksi?</label><div class="jmv-fselect-wrap"><div class="jmv-fselect">1% — Konservatif ▾</div></div></div>
+                      <div class="jmv-frow"><label class="jmv-flabel">3. Ingin mengembangkan akun ini dalam berapa bulan?</label><div class="jmv-fselect-wrap"><div class="jmv-fselect">3 Bulan ▾</div></div></div>
+                      <div class="jmv-frow"><label class="jmv-flabel">4. Target saldo yang kamu harapkan?</label><div class="jmv-fwrap"><span class="jmv-fpre">Rp</span><div class="jmv-finput">10.000.000</div></div></div>
+                      <div class="jmv-frow"><label class="jmv-flabel">5. Pair yang paling sering kamu gunakan?</label><div class="jmv-fselect-wrap"><div class="jmv-fselect">XAUUSD — Gold ▾</div></div></div>
+                      <hr style="border:none;border-top:1px solid rgba(201,168,76,0.12);margin:12px 0;">
+                      <div style="display:flex;gap:8px;margin-top:4px"><button class="jmv-btn-gold" style="flex:1">⚡ Hitung & Generate</button><button class="jmv-btn-ghost">↺ Reset</button></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="jmv-box">
+                      <div class="jmv-box-head"><span class="jmv-box-title">📊 Rangkuman Teknis</span><span style="background:rgba(34,197,94,0.1);color:#22C55E;border:1px solid rgba(34,197,94,0.25);font-size:9px;padding:3px 8px;border-radius:5px;font-family:'JetBrains Mono',monospace;">KONSERVATIF</span></div>
+                      <div class="jmv-rtable">
+                        <div class="jmv-rrow"><span class="jmv-rlbl">💰 Saldo Awal</span><span class="jmv-rval">Rp 3.000.000</span></div>
+                        <div class="jmv-rrow"><span class="jmv-rlbl">🎯 Target</span><span class="jmv-rval">Rp 10.000.000</span></div>
+                        <div class="jmv-rrow"><span class="jmv-rlbl">⚡ Lot Ideal</span><span class="jmv-rval" style="color:#E8C567">0.02 lot</span></div>
+                        <div class="jmv-rrow"><span class="jmv-rlbl">🛡️ Max Loss/Trade</span><span class="jmv-rval" style="color:#E84040">Rp 30.000</span></div>
+                        <div class="jmv-rrow"><span class="jmv-rlbl">📊 Profit/Hari (Target)</span><span class="jmv-rval" style="color:#22C55E">Rp 77.778</span></div>
+                        <div class="jmv-rrow"><span class="jmv-rlbl">🔢 Max Trade/Hari</span><span class="jmv-rval">3 trade</span></div>
+                        <div class="jmv-rrow"><span class="jmv-rlbl">📉 Max Drawdown</span><span class="jmv-rval">15%</span></div>
+                        <div class="jmv-rrow"><span class="jmv-rlbl">💱 Value per Pip</span><span class="jmv-rval">Rp 163</span></div>
+                      </div>
+                    </div>
+                    <div class="jmv-box" style="margin-top:12px;">
+                      <div class="jmv-box-head"><span class="jmv-box-title">💡 Kesimpulan</span></div>
+                      <div class="jmv-box-body"><p style="font-size:12px;color:#C8C0B0;line-height:1.7;">Dengan saldo <strong style="color:#E8C567">Rp 3.000.000</strong> dan risk 1%, lot ideal lo adalah <strong style="color:#E8C567">0.02 lot</strong>. Untuk mencapai target Rp 10.000.000 dalam 3 bulan, lo perlu profit konsisten <strong style="color:#22C55E">Rp 77.778/hari</strong>.</p></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PAGE: PLAN -->
+            <div class="jmv-page" id="jmvp-plan">
+              <div class="jmv-main">
+                <div class="jmv-ph">
+                  <div>
+                    <div class="jmv-ph-label">📅 Modul 02 — Trading Plan</div>
+                    <h2 class="jmv-ph-title">Plan <em>Harian</em></h2>
+                    <p class="jmv-ph-sub">Buka market dengan arah yang jelas — bukan feeling.</p>
+                  </div>
+                </div>
+                <div class="jmv-g12">
+                  <div class="jmv-box">
+                    <div class="jmv-box-head"><span class="jmv-box-title">📝 Isi Plan Hari Ini</span></div>
+                    <div class="jmv-box-body">
+                      <div class="jmv-frow"><label class="jmv-flabel">Tanggal</label><div class="jmv-finput">Senin, 21 April 2025</div></div>
+                      <div class="jmv-frow"><label class="jmv-flabel">Bias Market Hari Ini</label><div class="jmv-fselect-wrap"><div class="jmv-fselect">Bullish ▾</div></div></div>
+                      <div class="jmv-frow"><label class="jmv-flabel">Target Profit Hari Ini</label><div class="jmv-fwrap"><span class="jmv-fpre">Rp</span><div class="jmv-finput">200.000</div></div></div>
+                      <div class="jmv-frow"><label class="jmv-flabel">Max Loss yang Ditoleransi</label><div class="jmv-fwrap"><span class="jmv-fpre">Rp</span><div class="jmv-finput">100.000</div></div></div>
+                      <div class="jmv-frow"><label class="jmv-flabel">Catatan / Setup Hari Ini</label><div class="jmv-finput" style="height:56px;">Tunggu konfirmasi London open, focus XAUUSD sesi pagi</div></div>
+                      <button class="jmv-btn-gold" style="width:100%;margin-top:8px;">💾 Simpan Plan</button>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="jmv-box">
+                      <div class="jmv-box-head"><span class="jmv-box-title">📊 Proyeksi Otomatis</span></div>
+                      <div class="jmv-rtable">
+                        <div class="jmv-rrow"><span class="jmv-rlbl">📅 Tanggal</span><span class="jmv-rval">21 April 2025</span></div>
+                        <div class="jmv-rrow"><span class="jmv-rlbl">📈 Bias</span><span class="jmv-rval" style="color:#22C55E">Bullish ↑</span></div>
+                        <div class="jmv-rrow"><span class="jmv-rlbl">🎯 Target Profit</span><span class="jmv-rval" style="color:#22C55E">Rp 200.000</span></div>
+                        <div class="jmv-rrow"><span class="jmv-rlbl">🛑 Max Loss</span><span class="jmv-rval" style="color:#E84040">Rp 100.000</span></div>
+                        <div class="jmv-rrow"><span class="jmv-rlbl">💰 Proyeksi Saldo</span><span class="jmv-rval" style="color:#E8C567">Rp 5.200.000</span></div>
+                        <div class="jmv-rrow"><span class="jmv-rlbl">🔢 Max Trade</span><span class="jmv-rval">3 trade</span></div>
+                        <div class="jmv-rrow"><span class="jmv-rlbl">⏰ Session Target</span><span class="jmv-rval">London Open</span></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PAGE: DATA -->
+            <div class="jmv-page" id="jmvp-data">
+              <div class="jmv-main">
+                <div class="jmv-ph">
+                  <div>
+                    <div class="jmv-ph-label">📋 Modul 03 — Data Trading</div>
+                    <h2 class="jmv-ph-title">Jurnal <em>Transaksi</em></h2>
+                    <p class="jmv-ph-sub">Catat setiap trade — semua kalkulasi otomatis.</p>
+                  </div>
+                  <button class="jmv-btn-gold">+ Tambah Trade</button>
+                </div>
+                <div class="jmv-stat-row">
+                  <div class="jmv-scard"><div class="jmv-scard-lbl">Total P&L</div><div class="jmv-scard-val" style="color:#22C55E">+Rp 380.000</div></div>
+                  <div class="jmv-scard"><div class="jmv-scard-lbl">Win Rate</div><div class="jmv-scard-val" style="color:#22C55E">70%</div></div>
+                  <div class="jmv-scard"><div class="jmv-scard-lbl">Total Trade</div><div class="jmv-scard-val">10</div></div>
+                  <div class="jmv-scard"><div class="jmv-scard-lbl">Saldo Akhir</div><div class="jmv-scard-val" style="color:#E8C567">Rp 5.380.000</div></div>
+                </div>
+                <div class="jmv-box">
+                  <div class="jmv-box-head"><span class="jmv-box-title">📊 Data Trading</span></div>
+                  <div class="jmv-tbl-scroll">
+                    <table class="jmv-dtable">
+                      <thead><tr><th>No</th><th>Tanggal</th><th>Sesi</th><th>Pair</th><th>Posisi</th><th>Lot</th><th>Entry</th><th>Close</th><th>Result</th><th>Pips</th><th>P/L</th><th>Total Saldo</th><th>Strategi</th></tr></thead>
+                      <tbody>
+                        <tr><td>1</td><td>21 Apr</td><td>London</td><td>XAUUSD</td><td>Buy</td><td>0.05</td><td>2320.00</td><td>2333.80</td><td><span class="jmv-badge-win">Profit</span></td><td class="jmv-green">+138</td><td class="jmv-green">+Rp 90.000</td><td>Rp 5.380.000</td><td>SNR</td></tr>
+                        <tr class="jmv-row-alt"><td>2</td><td>17 Apr</td><td>New York</td><td>XAUUSD</td><td>Buy</td><td>0.05</td><td>2308.50</td><td>2304.30</td><td><span class="jmv-badge-loss">Lose</span></td><td class="jmv-red">-42</td><td class="jmv-red">-Rp 27.300</td><td>Rp 5.290.000</td><td>SNR</td></tr>
+                        <tr><td>3</td><td>15 Apr</td><td>London</td><td>XAUUSD</td><td>Sell</td><td>0.07</td><td>2330.00</td><td>2316.00</td><td><span class="jmv-badge-win">Profit</span></td><td class="jmv-green">+140</td><td class="jmv-green">+Rp 127.400</td><td>Rp 5.317.300</td><td>Trendline</td></tr>
+                        <tr class="jmv-row-alt"><td>4</td><td>14 Apr</td><td>Asia</td><td>XAUUSD</td><td>Buy</td><td>0.04</td><td>2318.20</td><td>2320.10</td><td><span class="jmv-badge-win">Profit</span></td><td class="jmv-green">+19</td><td class="jmv-green">+Rp 12.380</td><td>Rp 5.189.900</td><td>Scalping</td></tr>
+                        <tr><td>5</td><td>10 Apr</td><td>London</td><td>XAUUSD</td><td>Buy</td><td>0.05</td><td>2300.50</td><td>2315.00</td><td><span class="jmv-badge-win">Profit</span></td><td class="jmv-green">+145</td><td class="jmv-green">+Rp 94.250</td><td>Rp 5.177.520</td><td>SNR</td></tr>
+                        <tr class="jmv-row-alt"><td>6</td><td>08 Apr</td><td>New York</td><td>XAUUSD</td><td>Sell</td><td>0.06</td><td>2312.00</td><td>2314.80</td><td><span class="jmv-badge-loss">Lose</span></td><td class="jmv-red">-28</td><td class="jmv-red">-Rp 27.384</td><td>Rp 5.083.270</td><td>Trendline</td></tr>
+                        <tr><td>7</td><td>07 Apr</td><td>London</td><td>XAUUSD</td><td>Buy</td><td>0.05</td><td>2295.30</td><td>2307.50</td><td><span class="jmv-badge-win">Profit</span></td><td class="jmv-green">+122</td><td class="jmv-green">+Rp 79.300</td><td>Rp 5.110.654</td><td>Breakout</td></tr>
+                        <tr class="jmv-row-alt"><td>8</td><td>03 Apr</td><td>London</td><td>XAUUSD</td><td>Buy</td><td>0.08</td><td>2278.00</td><td>2274.20</td><td><span class="jmv-badge-loss">Lose</span></td><td class="jmv-red">-38</td><td class="jmv-red">-Rp 49.192</td><td>Rp 5.031.354</td><td>SNR</td></tr>
+                        <tr><td>9</td><td>02 Apr</td><td>New York</td><td>XAUUSD</td><td>Sell</td><td>0.05</td><td>2298.20</td><td>2290.50</td><td><span class="jmv-badge-win">Profit</span></td><td class="jmv-green">+77</td><td class="jmv-green">+Rp 50.050</td><td>Rp 5.080.546</td><td>Trendline</td></tr>
+                        <tr class="jmv-row-alt"><td>10</td><td>01 Apr</td><td>London</td><td>XAUUSD</td><td>Buy</td><td>0.05</td><td>2285.50</td><td>2293.80</td><td><span class="jmv-badge-win">Profit</span></td><td class="jmv-green">+83</td><td class="jmv-green">+Rp 53.950</td><td>Rp 5.030.496</td><td>SNR</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PAGE: FILTER -->
+            <div class="jmv-page" id="jmvp-filter">
+              <div class="jmv-main">
+                <div class="jmv-ph">
+                  <div>
+                    <div class="jmv-ph-label">🔍 Modul 04 — Filter Trading</div>
+                    <h2 class="jmv-ph-title">Analisis <em>Performa</em></h2>
+                    <p class="jmv-ph-sub">Temukan pola trading lo berdasarkan data nyata.</p>
+                  </div>
+                </div>
+                <div class="jmv-flt-stats">
+                  <div class="jmv-flt-scard jmv-flt-green"><div class="jmv-flt-lbl">Total Profit</div><div class="jmv-flt-val jmv-green">+Rp 507.330</div></div>
+                  <div class="jmv-flt-scard jmv-flt-red"><div class="jmv-flt-lbl">Total Lose</div><div class="jmv-flt-val jmv-red">-Rp 103.876</div></div>
+                  <div class="jmv-flt-scard"><div class="jmv-flt-lbl">Total P - L</div><div class="jmv-flt-val">+Rp 403.454</div></div>
+                  <div class="jmv-flt-scard jmv-flt-gold"><div class="jmv-flt-lbl">Total Saldo</div><div class="jmv-flt-val jmv-gold">Rp 5.380.000</div></div>
+                </div>
+                <div class="jmv-g2">
+                  <div class="jmv-box">
+                    <div class="jmv-box-head"><span class="jmv-box-title">📈 Profit vs Saldo</span></div>
+                    <div class="jmv-box-body" style="height:160px;position:relative;"><canvas id="jmvChart1"></canvas></div>
+                  </div>
+                  <div class="jmv-box">
+                    <div class="jmv-box-head"><span class="jmv-box-title">🌏 Market Session</span></div>
+                    <div class="jmv-box-body" style="height:160px;position:relative;display:flex;align-items:center;gap:16px;">
+                      <canvas id="jmvChart2" style="max-width:140px;max-height:140px;"></canvas>
+                      <div class="jmv-legend">
+                        <div class="jmv-leg-item"><span style="background:#22C55E"></span>London (57%)</div>
+                        <div class="jmv-leg-item"><span style="background:#E84040"></span>New York (29%)</div>
+                        <div class="jmv-leg-item"><span style="background:#60A5FA"></span>Asia (14%)</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="jmv-g2" style="margin-top:12px;">
+                  <div class="jmv-box">
+                    <div class="jmv-box-head"><span class="jmv-box-title">📅 Profit per Tanggal</span></div>
+                    <div class="jmv-box-body" style="height:150px;position:relative;"><canvas id="jmvChart3"></canvas></div>
+                  </div>
+                  <div class="jmv-box">
+                    <div class="jmv-box-head"><span class="jmv-box-title">💱 Performa per Pair</span></div>
+                    <div class="jmv-box-body" style="height:150px;position:relative;"><canvas id="jmvChart4"></canvas></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PAGE: MONTHLY -->
+            <div class="jmv-page" id="jmvp-monthly">
+              <div class="jmv-main">
+                <div class="jmv-ph">
+                  <div>
+                    <div class="jmv-ph-label">📊 Modul 06 — Dashboard Bulanan</div>
+                    <h2 class="jmv-ph-title">Performa <em>Bulanan</em></h2>
+                    <p class="jmv-ph-sub">Ringkasan lengkap performa trading bulan ini.</p>
+                  </div>
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:#E8C567;padding:4px 12px;background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.16);border-radius:6px;">IDR</span>
+                </div>
+                <div class="jmv-kpi-grid">
+                  <div class="jmv-kpi jmv-kpi-green"><div class="jmv-kpi-lbl">Total Profit</div><div class="jmv-kpi-val jmv-green">+Rp 380.000</div></div>
+                  <div class="jmv-kpi"><div class="jmv-kpi-lbl">Win Rate</div><div class="jmv-kpi-val jmv-green">70%</div></div>
+                  <div class="jmv-kpi jmv-kpi-gold"><div class="jmv-kpi-lbl">Saldo Akhir</div><div class="jmv-kpi-val jmv-gold">Rp 5.380.000</div></div>
+                  <div class="jmv-kpi"><div class="jmv-kpi-lbl">Total Trade</div><div class="jmv-kpi-val">10</div></div>
+                  <div class="jmv-kpi"><div class="jmv-kpi-lbl">Best Day</div><div class="jmv-kpi-val">10 Apr (+145p)</div></div>
+                  <div class="jmv-kpi jmv-kpi-red"><div class="jmv-kpi-lbl">Worst Day</div><div class="jmv-kpi-val jmv-red">03 Apr (-38p)</div></div>
+                  <div class="jmv-kpi"><div class="jmv-kpi-lbl">Avg Pips/Trade</div><div class="jmv-kpi-val jmv-green">+61.6</div></div>
+                  <div class="jmv-kpi"><div class="jmv-kpi-lbl">Best Session</div><div class="jmv-kpi-val">London</div></div>
+                </div>
+                <div class="jmv-box" style="margin-top:12px;">
+                  <div class="jmv-box-head"><span class="jmv-box-title">📈 Equity Curve — April 2025</span></div>
+                  <div class="jmv-box-body" style="height:180px;position:relative;"><canvas id="jmvChart5"></canvas></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- LOCK OVERLAY -->
+            <div class="jm-lock-overlay">
+              <div class="jm-lock-content">
+                <div class="jm-lock-icon">🔒</div>
+                <div class="jm-lock-title">Fitur Lengkap Tersedia Setelah Pembelian</div>
+                <div class="jm-lock-list">
+                  <span>📊 Dashboard Analisis Bulanan</span>
+                  <span>🔍 Filter Mingguan & Tahunan</span>
+                  <span>🤖 Bot Input Otomatis <em style="color:#E8C567;font-style:normal;font-size:10px">(coming soon)</em></span>
+                  <span>🌐 Web App <em style="color:#E8C567;font-style:normal;font-size:10px">(coming soon)</em></span>
+                </div>
+                <a href="https://plan-better.myscalev.com/jurnaltradingotomatis" class="jm-lock-btn">Dapatkan Akses Penuh → Rp 147rb</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="jm-base"></div>
+        <div class="jm-notch"></div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════ EBOOK MOCKUP SECTION ══════ -->
+  <section class="py-20 bg-dark-900" id="ebook-bonus">
+    <div class="max-w-5xl mx-auto px-4">
+      <div class="text-center mb-12 reveal">
+        <p class="text-gold-400 font-syne font-semibold uppercase tracking-widest text-sm mb-4">Bonus Eksklusif</p>
+        <h2 class="font-bebas text-5xl md:text-6xl tracking-wide mb-4">
+          <span class="text-white">2 E-BOOK </span><span class="gold-gradient">GRATIS</span>
+        </h2>
+        <p class="text-white/60 font-inter text-base max-w-xl mx-auto">Lo dapat 2 e-book premium senilai Rp 400.000+ — gratis, langsung setelah pembelian.</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-8 items-center">
+
+        <!-- EBOOK 1 — CANDLESTICK -->
+        <div class="reveal flex flex-col items-center">
+          <!-- Book mockup -->
+          <div style="perspective:800px;margin-bottom:20px;">
+            <div style="transform:rotateY(-15deg) rotateX(3deg);transform-style:preserve-3d;display:inline-block;">
+              <div style="width:220px;height:300px;border-radius:4px 12px 12px 4px;background:linear-gradient(135deg,#0a0a0a 0%,#1a1200 40%,#2a1f00 100%);border:1px solid rgba(201,168,76,0.4);box-shadow:6px 0 20px rgba(0,0,0,0.8),-2px 0 8px rgba(201,168,76,0.15),inset -3px 0 6px rgba(0,0,0,0.5);position:relative;overflow:hidden;">
+                <!-- spine -->
+                <div style="position:absolute;left:0;top:0;bottom:0;width:14px;background:linear-gradient(90deg,#C9A84C,#8B6914);border-radius:4px 0 0 4px;"></div>
+                <!-- content -->
+                <div style="padding:20px 18px 20px 26px;height:100%;display:flex;flex-direction:column;justify-content:space-between;">
+                  <div>
+                    <div style="font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:3px;color:#C9A84C;margin-bottom:10px;text-transform:uppercase;">JORNALYZE · BONUS EKSKLUSIF</div>
+                    <div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:#F8F4EC;line-height:1.15;margin-bottom:6px;">Panduan<br><em style="color:#E8C567;">Candlestick</em><br>Trading</div>
+                    <div style="font-size:11px;color:#8A7A5A;font-family:'Inter',sans-serif;line-height:1.5;margin-top:8px;">Baca pola candle dengan benar — stop salah baca arah market</div>
+                  </div>
+                  <!-- candle illustrations -->
+                  <div style="display:flex;align-items:flex-end;gap:5px;height:60px;padding:0 4px;">
+                    <div style="display:flex;flex-direction:column;align-items:center;gap:1px;">
+                      <div style="width:1px;height:10px;background:#22C55E;"></div>
+                      <div style="width:8px;height:22px;background:#22C55E;border-radius:1px;"></div>
+                      <div style="width:1px;height:6px;background:#22C55E;"></div>
+                    </div>
+                    <div style="display:flex;flex-direction:column;align-items:center;gap:1px;">
+                      <div style="width:1px;height:6px;background:#E84040;"></div>
+                      <div style="width:8px;height:30px;background:#E84040;border-radius:1px;"></div>
+                      <div style="width:1px;height:12px;background:#E84040;"></div>
+                    </div>
+                    <div style="display:flex;flex-direction:column;align-items:center;gap:1px;">
+                      <div style="width:1px;height:14px;background:#22C55E;"></div>
+                      <div style="width:8px;height:18px;background:#22C55E;border-radius:1px;"></div>
+                      <div style="width:1px;height:5px;background:#22C55E;"></div>
+                    </div>
+                    <div style="display:flex;flex-direction:column;align-items:center;gap:1px;">
+                      <div style="width:1px;height:8px;background:#E84040;"></div>
+                      <div style="width:8px;height:25px;background:#E84040;border-radius:1px;"></div>
+                      <div style="width:1px;height:9px;background:#E84040;"></div>
+                    </div>
+                    <div style="display:flex;flex-direction:column;align-items:center;gap:1px;">
+                      <div style="width:1px;height:5px;background:#22C55E;"></div>
+                      <div style="width:8px;height:35px;background:#22C55E;border-radius:1px;"></div>
+                      <div style="width:1px;height:8px;background:#22C55E;"></div>
+                    </div>
+                    <div style="display:flex;flex-direction:column;align-items:center;gap:1px;">
+                      <div style="width:1px;height:10px;background:#E84040;"></div>
+                      <div style="width:8px;height:20px;background:#E84040;border-radius:1px;"></div>
+                      <div style="width:1px;height:7px;background:#E84040;"></div>
+                    </div>
+                  </div>
+                  <div style="border-top:1px solid rgba(201,168,76,0.2);padding-top:10px;">
+                    <div style="font-family:'JetBrains Mono',monospace;font-size:8px;color:#6A5A3A;letter-spacing:1px;">JOURNALYZE.APP</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- desc -->
+          <div class="text-center max-w-xs">
+            <div class="inline-flex items-center gap-2 bg-gold-400/10 border border-gold-400/20 rounded-full px-3 py-1 mb-3">
+              <span class="text-gold-400 text-xs font-syne font-bold">📘 E-BOOK #1</span>
+            </div>
+            <h3 class="font-syne font-bold text-white text-lg mb-2">Panduan Candlestick Trading</h3>
+            <p class="text-white/50 font-inter text-sm leading-relaxed">Pelajari pola-pola candle paling profitable — Doji, Engulfing, Hammer, Pin Bar, dan 15+ pola lainnya — lengkap dengan contoh entry & exit nyata.</p>
+            <p class="text-green-400 font-syne text-sm font-bold mt-3">✓ Senilai Rp 200.000 · Gratis!</p>
+          </div>
+        </div>
+
+        <!-- EBOOK 2 — SUPPORT & RESISTANCE -->
+        <div class="reveal flex flex-col items-center" style="transition-delay:0.15s">
+          <!-- Book mockup -->
+          <div style="perspective:800px;margin-bottom:20px;">
+            <div style="transform:rotateY(15deg) rotateX(3deg);transform-style:preserve-3d;display:inline-block;">
+              <div style="width:220px;height:300px;border-radius:4px 12px 12px 4px;background:linear-gradient(135deg,#060810 0%,#0a1020 40%,#0f1a30 100%);border:1px solid rgba(96,165,250,0.35);box-shadow:6px 0 20px rgba(0,0,0,0.8),-2px 0 8px rgba(96,165,250,0.1),inset -3px 0 6px rgba(0,0,0,0.5);position:relative;overflow:hidden;">
+                <!-- spine -->
+                <div style="position:absolute;left:0;top:0;bottom:0;width:14px;background:linear-gradient(90deg,#3B82F6,#1D4ED8);border-radius:4px 0 0 4px;"></div>
+                <!-- content -->
+                <div style="padding:20px 18px 20px 26px;height:100%;display:flex;flex-direction:column;justify-content:space-between;">
+                  <div>
+                    <div style="font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:3px;color:#60A5FA;margin-bottom:10px;text-transform:uppercase;">JORNALYZE · BONUS EKSKLUSIF</div>
+                    <div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:#F8F4EC;line-height:1.15;margin-bottom:6px;">Support &amp;<br><em style="color:#93C5FD;">Resistance</em><br>Mastery</div>
+                    <div style="font-size:11px;color:#4A6A8A;font-family:'Inter',sans-serif;line-height:1.5;margin-top:8px;">Temukan zona kunci market — di sinilah semua entry terbaik berada</div>
+                  </div>
+                  <!-- S/R chart illustration -->
+                  <div style="position:relative;height:65px;">
+                    <!-- resistance line -->
+                    <div style="position:absolute;top:5px;left:0;right:0;height:1px;background:rgba(232,64,64,0.7);"></div>
+                    <div style="position:absolute;top:0;left:4px;font-size:7px;color:#E84040;font-family:monospace;">RESISTANCE</div>
+                    <!-- support line -->
+                    <div style="position:absolute;bottom:10px;left:0;right:0;height:1px;background:rgba(34,197,94,0.7);"></div>
+                    <div style="position:absolute;bottom:2px;left:4px;font-size:7px;color:#22C55E;font-family:monospace;">SUPPORT</div>
+                    <!-- price zig-zag -->
+                    <svg viewBox="0 0 180 50" width="180" height="50" style="position:absolute;top:0;left:0;">
+                      <polyline points="0,35 25,25 50,40 75,12 100,38 125,20 150,36 180,15" stroke="#60A5FA" stroke-width="1.5" fill="none"/>
+                    </svg>
+                  </div>
+                  <div style="border-top:1px solid rgba(96,165,250,0.15);padding-top:10px;">
+                    <div style="font-family:'JetBrains Mono',monospace;font-size:8px;color:#2A4A6A;letter-spacing:1px;">JOURNALYZE.APP</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- desc -->
+          <div class="text-center max-w-xs">
+            <div class="inline-flex items-center gap-2 bg-blue-400/10 border border-blue-400/20 rounded-full px-3 py-1 mb-3">
+              <span class="text-blue-400 text-xs font-syne font-bold">📚 E-BOOK #2</span>
+            </div>
+            <h3 class="font-syne font-bold text-white text-lg mb-2">Support & Resistance Mastery</h3>
+            <p class="text-white/50 font-inter text-sm leading-relaxed">Cara menggambar zona S&R yang valid, memilih entry yang tepat di zona tersebut, dan menghindari false breakout yang sering menjebak trader pemula.</p>
+            <p class="text-green-400 font-syne text-sm font-bold mt-3">✓ Senilai Rp 200.000 · Gratis!</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- total value badge -->
+      <div class="mt-12 reveal">
+        <div class="card-glow bg-dark-800/60 rounded-2xl p-6 text-center max-w-lg mx-auto">
+          <p class="text-white/40 font-inter text-xs uppercase tracking-widest mb-2">Total Nilai Bonus yang Lo Dapat</p>
+          <p class="font-bebas text-5xl gold-gradient mb-1">Rp 800.000+</p>
+          <p class="text-white/50 font-inter text-sm">2 E-Book + Video Tutorial + Konsultasi + Grup Komunitas + Free Update Seumur Hidup</p>
+          <p class="text-green-400 font-syne font-bold text-sm mt-3">✓ Semua Gratis — Cukup Bayar Rp 147.000</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- WHAT'S INSIDE -->
+  <section class="py-24 bg-dark-800">
+    <div class="max-w-5xl mx-auto px-4">
+      <div class="text-center mb-16 reveal">
+        <p class="text-gold-400 font-syne font-semibold uppercase tracking-widest text-sm mb-4">Yang Lo Dapatkan</p>
+        <h2 class="font-bebas text-5xl md:text-6xl text-white tracking-wide">PAKET LENGKAP <span class="gold-gradient">JORNALYZE</span></h2>
+      </div>
+      <div class="grid md:grid-cols-2 gap-5">
+        <div class="card-glow bg-dark-700/50 rounded-3xl p-8 reveal">
+          <div class="pill inline-block px-3 py-1 rounded-full text-xs text-gold-400 font-syne font-semibold mb-6">PRODUK UTAMA</div>
+          <div class="space-y-4">
+            <div class="flex gap-4 items-start">
+              <div class="number-badge">1</div>
+              <div>
+                <h4 class="font-syne font-bold text-white mb-1">Jurnal Trading Serba OTOMATIS</h4>
+                <p class="text-white/40 text-sm font-inter">Template Google Sheets canggih yang auto-kalkulasi semua metrik trading lo</p>
+              </div>
+            </div>
+            <div class="border-t border-white/5"></div>
+            <div class="flex gap-4 items-start">
+              <div class="number-badge">2</div>
+              <div>
+                <h4 class="font-syne font-bold text-white mb-1">Trading Plan Siap Pakai 🎯</h4>
+                <p class="text-white/40 text-sm font-inter">Framework rencana trading yang langsung bisa lo pakai hari ini</p>
+              </div>
+            </div>
+            <div class="border-t border-white/5"></div>
+            <div class="flex gap-4 items-start">
+              <div class="number-badge">3</div>
+              <div>
+                <h4 class="font-syne font-bold text-white mb-1">Panduan Risk Management 🔴</h4>
+                <p class="text-white/40 text-sm font-inter">Cara menghitung sizing posisi yang benar agar modal tetap aman</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="reveal" style="transition-delay:0.1s">
+          <div class="bg-gradient-to-br from-gold-400/10 to-gold-600/5 border border-gold-400/20 rounded-3xl p-8 h-full">
+            <div class="inline-block bg-gold-400 text-black text-xs font-syne font-bold px-3 py-1 rounded-full mb-6">🎁 BONUS SPESIAL</div>
+            <div class="space-y-3">
+              <div class="flex items-center gap-3"><svg class="w-5 h-5 text-gold-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg><span class="text-white font-inter text-sm">E-Book Candlestick 📘</span></div>
+              <div class="flex items-center gap-3"><svg class="w-5 h-5 text-gold-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg><span class="text-white font-inter text-sm">E-Book Support & Resistance 📚</span></div>
+              <div class="flex items-center gap-3"><svg class="w-5 h-5 text-gold-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg><span class="text-white font-inter text-sm">Konsultasi Telepon (1x) 📞</span></div>
+              <div class="flex items-center gap-3"><svg class="w-5 h-5 text-gold-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg><span class="text-white font-inter text-sm">Video Tutorial Lengkap 🎬</span></div>
+              <div class="flex items-center gap-3"><svg class="w-5 h-5 text-gold-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg><span class="text-white font-inter text-sm">Free Update Seumur Hidup ∞</span></div>
+              <div class="flex items-center gap-3"><svg class="w-5 h-5 text-gold-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg><span class="text-white font-inter text-sm"><strong style="color:#f59e0b;">Akses Grup Komunitas Trader</strong> 👥</span></div>
+            </div>
+            <div class="mt-6 p-4 bg-dark-900/60 rounded-2xl">
+              <p class="text-white/40 text-xs font-inter">Total nilai bonus:</p>
+              <p class="text-gold-400 font-syne font-bold text-xl">Rp 800.000+</p>
+              <p class="text-green-400 text-xs font-inter mt-1">✓ Gratis untuk lo</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ TESTIMONIALS — WA STYLE + FOTO ══════ -->
+  <section class="py-24 hero-bg relative">
+    <div class="max-w-5xl mx-auto px-4">
+      <div class="text-center mb-16 reveal">
+        <p class="text-gold-400 font-syne font-semibold uppercase tracking-widest text-sm mb-4">Kata Mereka</p>
+        <h2 class="font-bebas text-5xl md:text-6xl text-white tracking-wide">TRADER YANG UDAH <span class="gold-gradient">BUKTIIN</span></h2>
+        <p class="text-white/50 font-inter text-base mt-4 max-w-xl mx-auto">Chat asli dari komunitas kami — hasil nyata, bukan karangan.</p>
+      </div>
+
+      <!-- TESTI SLIDER -->
+      <div class="testi-slider-wrap reveal mb-12">
+        <div class="testi-slider-outer" style="position:relative;">
+          <!-- Prev/Next arrows -->
+          <button class="testi-arrow testi-prev-btn" onclick="slideTestiDir(-1)" aria-label="Previous">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <button class="testi-arrow testi-next-btn" onclick="slideTestiDir(1)" aria-label="Next">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+
+          <!-- Track -->
+          <div class="testi-track-wrap" style="overflow:hidden;border-radius:20px;">
+            <div class="testi-track" id="testiTrack" style="display:flex;transition:transform 0.42s cubic-bezier(0.25,0.46,0.45,0.94);">
+              <div class="testi-slide" style="min-width:100%;padding:0 2px;">
+                <img src="images/testi-ferdy.png" alt="Testimoni Ferdy" style="width:100%;max-width:480px;display:block;margin:0 auto;border-radius:20px;box-shadow:0 12px 48px rgba(0,0,0,0.7);" loading="lazy"/>
+              </div>
+              <div class="testi-slide" style="min-width:100%;padding:0 2px;">
+                <img src="images/testi-bagas.png" alt="Testimoni Bagas" style="width:100%;max-width:480px;display:block;margin:0 auto;border-radius:20px;box-shadow:0 12px 48px rgba(0,0,0,0.7);" loading="lazy"/>
+              </div>
+              <div class="testi-slide" style="min-width:100%;padding:0 2px;">
+                <img src="images/testi-amel.png" alt="Testimoni Amel" style="width:100%;max-width:480px;display:block;margin:0 auto;border-radius:20px;box-shadow:0 12px 48px rgba(0,0,0,0.7);" loading="lazy"/>
+              </div>
+              <div class="testi-slide" style="min-width:100%;padding:0 2px;">
+                <img src="images/testi-rizal.png" alt="Testimoni Rizal" style="width:100%;max-width:480px;display:block;margin:0 auto;border-radius:20px;box-shadow:0 12px 48px rgba(0,0,0,0.7);" loading="lazy"/>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dots -->
+          <div class="testi-dots-wrap" style="display:flex;justify-content:center;gap:8px;margin-top:16px;">
+            <button class="testi-dot-btn on" onclick="goToTesti(0)"></button>
+            <button class="testi-dot-btn" onclick="goToTesti(1)"></button>
+            <button class="testi-dot-btn" onclick="goToTesti(2)"></button>
+            <button class="testi-dot-btn" onclick="goToTesti(3)"></button>
+          </div>
+
+          <!-- Names -->
+          <p class="testi-name-label" id="testiNameLabel" style="text-align:center;margin-top:10px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:rgba(245,158,11,0.8);">Ferdy Customer</p>
+        </div>
+      </div>
+
+            <!-- STATS BAR -->
+      <div class="grid grid-cols-3 gap-6 mt-12 card-glow bg-dark-800/60 rounded-2xl p-6 reveal">
+        <div class="text-center">
+          <p class="font-bebas text-4xl text-gold-400">1.000+</p>
+          <p class="text-white/50 text-sm font-inter">Trader Aktif</p>
+        </div>
+        <div class="text-center border-x border-white/5">
+          <p class="font-bebas text-4xl text-gold-400">4.9/5</p>
+          <p class="text-white/50 text-sm font-inter">Rating Rata-rata</p>
+        </div>
+        <div class="text-center">
+          <p class="font-bebas text-4xl text-gold-400">95%</p>
+          <p class="text-white/50 text-sm font-inter">Puas & Rekomendasikan</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOR WHO -->
+  <section class="py-20 bg-dark-800">
+    <div class="max-w-4xl mx-auto px-4">
+      <div class="grid md:grid-cols-2 gap-8">
+        <div class="reveal">
+          <h3 class="font-bebas text-3xl text-green-400 mb-6 tracking-wide">✅ JORNALYZE UNTUK LO JIKA...</h3>
+          <div class="space-y-3">
+            <div class="flex gap-3 items-start"><svg class="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg><p class="text-white/70 font-inter text-sm">Lo trader pemula yang pengen mulai dengan pondasi yang bener</p></div>
+            <div class="flex gap-3 items-start"><svg class="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg><p class="text-white/70 font-inter text-sm">Lo udah trading tapi masih ga konsisten dan ga tau kenapa</p></div>
+            <div class="flex gap-3 items-start"><svg class="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg><p class="text-white/70 font-inter text-sm">Lo mau tracking performa secara data-driven, bukan feeling</p></div>
+            <div class="flex gap-3 items-start"><svg class="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg><p class="text-white/70 font-inter text-sm">Lo trading Forex, Crypto, Futures, Saham — semua bisa pakai ini</p></div>
+          </div>
+        </div>
+        <div class="reveal" style="transition-delay:0.1s">
+          <h3 class="font-bebas text-3xl text-red-400 mb-6 tracking-wide">❌ BUKAN UNTUK LO JIKA...</h3>
+          <div class="space-y-3">
+            <div class="flex gap-3 items-start"><div class="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5 font-bold text-lg leading-none">×</div><p class="text-white/50 font-inter text-sm">Lo cari cara cepat kaya tanpa belajar dan kerja keras</p></div>
+            <div class="flex gap-3 items-start"><div class="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5 font-bold text-lg leading-none">×</div><p class="text-white/50 font-inter text-sm">Lo ga mau konsisten isi jurnal dan evaluasi trading</p></div>
+            <div class="flex gap-3 items-start"><div class="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5 font-bold text-lg leading-none">×</div><p class="text-white/50 font-inter text-sm">Lo ngerasa trading bisa profit tanpa tracking dan sistem</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING / ORDER SECTION -->
+  <section id="order" class="py-24 hero-bg relative">
+    <div class="max-w-2xl mx-auto px-4 text-center">
+      <div class="reveal">
+        <p class="text-gold-400 font-syne font-semibold uppercase tracking-widest text-sm mb-4">Investasi Terbaik Trader</p>
+        <h2 class="font-bebas text-5xl md:text-6xl text-white tracking-wide mb-10">AMBIL SEKARANG</h2>
+      </div>
+
+      <div class="reveal card-glow bg-dark-800/90 rounded-3xl p-8 md:p-10 backdrop-blur">
+        <!-- Price -->
+        <div class="mb-6">
+          <p class="text-white/40 font-inter text-sm mb-1">Harga normal</p>
+          <p class="price-strike text-white/40 font-syne text-2xl">Rp 297.000</p>
+          <div class="mt-2 flex items-end justify-center gap-2">
+            <p class="font-bebas text-6xl gold-gradient">Rp 147.000</p>
+          </div>
+          <div class="inline-block bg-red-500/20 border border-red-500/30 px-3 py-1 rounded-full mt-2">
+            <p class="text-red-400 text-xs font-syne font-bold">HEMAT 50% — Early Bird · Harga Naik Setelah Timer Habis!</p>
+          </div>
+        </div>
+
+        <!-- Timer in order -->
+        <div class="bg-dark-900/60 rounded-2xl p-4 mb-6">
+          <p class="text-white/40 text-xs font-inter uppercase tracking-widest mb-2">⚡ Harga ini berlaku dalam</p>
+          <div class="flex justify-center gap-4">
+            <div class="text-center">
+              <div id="o-hours" class="font-bebas text-4xl text-gold-400">23</div>
+              <div class="text-xs text-white/40 font-inter">JAM</div>
+            </div>
+            <div class="font-bebas text-3xl text-gold-400/50 self-center">:</div>
+            <div class="text-center">
+              <div id="o-minutes" class="font-bebas text-4xl text-gold-400">59</div>
+              <div class="text-xs text-white/40 font-inter">MENIT</div>
+            </div>
+            <div class="font-bebas text-3xl text-gold-400/50 self-center">:</div>
+            <div class="text-center">
+              <div id="o-seconds" class="font-bebas text-4xl text-gold-400">00</div>
+              <div class="text-xs text-white/40 font-inter">DETIK</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- What you get summary -->
+        <div class="bg-dark-900/40 rounded-2xl p-5 mb-6 text-left">
+          <p class="text-white/60 text-xs font-inter uppercase tracking-widest mb-3">Yang lo dapatkan:</p>
+          <div class="space-y-2">
+            <div class="flex items-center gap-2"><svg class="w-4 h-4 text-gold-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg><span class="text-white/80 text-sm font-inter">Jurnal Trading Serba OTOMATIS</span></div>
+            <div class="flex items-center gap-2"><svg class="w-4 h-4 text-gold-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg><span class="text-white/80 text-sm font-inter">Trading Plan Siap Pakai 🎯</span></div>
+            <div class="flex items-center gap-2"><svg class="w-4 h-4 text-gold-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg><span class="text-white/80 text-sm font-inter">E-Book Candlestick + Support & Resistance 📚</span></div>
+            <div class="flex items-center gap-2"><svg class="w-4 h-4 text-gold-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg><span class="text-white/80 text-sm font-inter">Panduan Risk Management + Konsultasi (1x) 📞</span></div>
+            <div class="flex items-center gap-2"><svg class="w-4 h-4 text-gold-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg><span class="text-white/80 text-sm font-inter">Video Tutorial Lengkap + Free Update ∞</span></div>
+            <div class="flex items-center gap-2"><svg class="w-4 h-4 text-gold-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg><span class="text-white/80 text-sm font-inter"><strong style="color:#f59e0b;">Akses Grup Komunitas Trader</strong> 👥</span></div>
+          </div>
+        </div>
+
+        <a href="https://plan-better.myscalev.com/jurnaltradingotomatis" target="_blank" rel="noopener noreferrer" class="block w-full mb-4">
+          <button class="cta-btn text-black font-syne font-bold text-xl px-8 py-5 rounded-2xl text-center w-full">
+            🚀 YA! SAYA MAU AKSES JORNALYZE SEKARANG
+          </button>
+        </a>
+        <p class="text-white/30 text-xs font-inter">✓ Akses langsung setelah pembayaran · ✓ Bayar sekali, pakai selamanya · ✓ Support via WhatsApp</p>
+
+        <!-- Trust badges -->
+        <div class="flex justify-center gap-6 mt-6 flex-wrap">
+          <div class="flex items-center gap-1 text-white/40 text-xs font-inter">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
+            Pembayaran Aman
+          </div>
+          <div class="flex items-center gap-1 text-white/40 text-xs font-inter">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            Akses Instan
+          </div>
+          <div class="flex items-center gap-1 text-white/40 text-xs font-inter">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"/></svg>
+            Support 7 Hari
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="py-20 bg-dark-800">
+    <div class="max-w-3xl mx-auto px-4">
+      <div class="text-center mb-12 reveal">
+        <h2 class="font-bebas text-5xl text-white tracking-wide">PERTANYAAN <span class="gold-gradient">UMUM</span></h2>
+      </div>
+      <div class="space-y-3" id="faq">
+        <div class="faq-item card-glow bg-dark-700/40 rounded-2xl overflow-hidden reveal">
+          <button class="faq-btn w-full text-left px-6 py-5 flex items-center justify-between font-syne font-semibold text-white">
+            Format jurnal ini apa? Google Sheets atau Excel?
+            <svg class="w-5 h-5 text-gold-400 faq-icon transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="faq-content hidden px-6 pb-5 text-white/60 font-inter text-sm leading-relaxed">
+            JORNALYZE tersedia dalam <strong style="color:#E8C567;">dua format</strong>:<br><br><strong style="color:#fff;">① Versi Web App</strong> — buka langsung di browser, tanpa install apapun. Tinggal buka link, langsung bisa pakai dari HP atau laptop.<br><br><strong style="color:#fff;">② Versi Google Sheets</strong> — cocok kalau lo lebih suka pakai spreadsheet, bisa dikustomisasi, cukup punya akun Google.
+          </div>
+        </div>
+        <div class="faq-item card-glow bg-dark-700/40 rounded-2xl overflow-hidden reveal" style="transition-delay:0.05s">
+          <button class="faq-btn w-full text-left px-6 py-5 flex items-center justify-between font-syne font-semibold text-white">
+            Cocok untuk market apa saja?
+            <svg class="w-5 h-5 text-gold-400 faq-icon transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="faq-content hidden px-6 pb-5 text-white/60 font-inter text-sm leading-relaxed">
+            Bisa dipakai untuk Forex, Crypto, Futures (BBRI, dll), Saham — apapun yang ada SL dan TP-nya.
+          </div>
+        </div>
+        <div class="faq-item card-glow bg-dark-700/40 rounded-2xl overflow-hidden reveal" style="transition-delay:0.1s">
+          <button class="faq-btn w-full text-left px-6 py-5 flex items-center justify-between font-syne font-semibold text-white">
+            Setelah bayar, aksesnya gimana?
+            <svg class="w-5 h-5 text-gold-400 faq-icon transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="faq-content hidden px-6 pb-5 text-white/60 font-inter text-sm leading-relaxed">
+            Setelah pembayaran dikonfirmasi, lo akan langsung mendapatkan link akses via WhatsApp atau email. Prosesnya cepat!
+          </div>
+        </div>
+        <div class="faq-item card-glow bg-dark-700/40 rounded-2xl overflow-hidden reveal" style="transition-delay:0.15s">
+          <button class="faq-btn w-full text-left px-6 py-5 flex items-center justify-between font-syne font-semibold text-white">
+            Apakah ada biaya bulanan?
+            <svg class="w-5 h-5 text-gold-400 faq-icon transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="faq-content hidden px-6 pb-5 text-white/60 font-inter text-sm leading-relaxed">
+            Tidak! Lo bayar sekali, dapat akses selamanya termasuk semua update di masa depan. No hidden fees.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="py-24 relative overflow-hidden" style="background: radial-gradient(ellipse at center, rgba(245,158,11,0.15), #0a0a0a)">
+    <div class="max-w-3xl mx-auto px-4 text-center reveal">
+      <p class="text-gold-400 font-syne font-semibold uppercase tracking-widest text-sm mb-4">Keputusan Ada di Lo</p>
+      <h2 class="font-bebas text-5xl md:text-7xl text-white tracking-wide mb-6">
+        MULAI DARI <span class="gold-gradient">SEKARANG.</span><br>BUKAN NANTI.
+      </h2>
+      <p class="text-white/60 font-inter text-lg mb-10 max-w-xl mx-auto">30 hari ke depan, lo bisa jadi trader yang rapi, konsisten, dan ga asal entry — atau tetap nebak-nebak kayak sekarang. Pilihan ada di tangan lo.</p>
+      <a href="https://plan-better.myscalev.com/jurnaltradingotomatis" target="_blank" rel="noopener noreferrer">
+        <button class="cta-btn inline-block text-black font-syne font-bold text-xl px-10 py-5 rounded-2xl">
+          🚀 Dapatkan JORNALYZE — Rp 147.000
+        </button>
+      </a>
+      <p class="text-white/30 text-sm mt-4 font-inter">✓ Bayar sekali · ✓ Akses selamanya · ✓ Ga pake ribet</p>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="py-8 border-t border-white/5 bg-dark-900">
+    <div class="max-w-5xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="font-bebas text-2xl tracking-widest gold-gradient">JORNALYZE</div>
+      <p class="text-white/30 text-xs font-inter">© 2025 JORNALYZE — Jurnal Trading Otomatis. All rights reserved.</p>
+      <div class="flex gap-4 text-xs text-white/30 font-inter">
+        <a href="#" class="hover:text-white/60 transition-colors">Kebijakan Privasi</a>
+        <a href="#" class="hover:text-white/60 transition-colors">Syarat & Ketentuan</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- STICKY CTA MOBILE -->
+  <div class="sticky-cta fixed bottom-0 left-0 right-0 z-50 p-3 bg-dark-900/95 backdrop-blur border-t border-gold-400/20">
+    <a href="https://plan-better.myscalev.com/jurnaltradingotomatis" target="_blank" rel="noopener noreferrer">
+      <button class="cta-btn flex items-center justify-center gap-2 text-black font-syne font-bold text-base px-6 py-3.5 rounded-xl w-full">
+        🚀 Dapatkan Akses — Rp 147.000
+      </button>
+    </a>
+  </div>
+
+  <script>
+
+    // ── TESTI SLIDER ──
+    var _testiIdx = 0;
+    var _testiTotal = 4;
+    var _testiNames = ['Ferdy Customer','Bagas Customer','Amel Customer','Rizal Customer'];
+    function _updateTesti() {
+      var track = document.getElementById('testiTrack');
+      if (track) track.style.transform = 'translateX(-' + (_testiIdx * 100) + '%)';
+      document.querySelectorAll('.testi-dot-btn').forEach(function(d,i){ d.classList.toggle('on', i===_testiIdx); });
+      var lbl = document.getElementById('testiNameLabel');
+      if (lbl) lbl.textContent = _testiNames[_testiIdx];
+    }
+    function slideTestiDir(dir) { _testiIdx = (_testiIdx + dir + _testiTotal) % _testiTotal; _updateTesti(); }
+    function goToTesti(idx) { _testiIdx = idx; _updateTesti(); }
+    // touch/swipe
+    (function(){
+      var track = document.getElementById('testiTrack');
+      if (!track) return;
+      var startX = 0;
+      track.addEventListener('touchstart', function(e){ startX = e.touches[0].clientX; }, {passive:true});
+      track.addEventListener('touchend', function(e){
+        var diff = startX - e.changedTouches[0].clientX;
+        if (Math.abs(diff) > 40) slideTestiDir(diff > 0 ? 1 : -1);
+      }, {passive:true});
+    })();
+
+    // ── TOAST NOTIFIKASI PEMBELIAN ──
+    const buyers = [
+      {name:'Ri** · Surabaya', time:'2 menit lalu'},
+      {name:'An** · Jakarta', time:'baru saja'},
+      {name:'Ba** · Bandung', time:'5 menit lalu'},
+      {name:'Di** · Medan', time:'8 menit lalu'},
+      {name:'Fa** · Yogyakarta', time:'baru saja'},
+      {name:'Ag** · Malang', time:'3 menit lalu'},
+      {name:'De** · Bali', time:'11 menit lalu'},
+      {name:'Re** · Pekanbaru', time:'baru saja'},
+      {name:'Li** · Surabaya', time:'1 menit lalu'},
+      {name:'Ra** · Makassar', time:'6 menit lalu'},
+      {name:'Ir** · Semarang', time:'baru saja'},
+      {name:'Pu** · Palembang', time:'4 menit lalu'},
+    ];
+    let toastIdx = 0;
+    const vpToast = document.getElementById('vpToast');
+    function showToast() {
+      const b = buyers[toastIdx % buyers.length];
+      document.getElementById('vpName').textContent = b.name;
+      document.getElementById('vpTime').textContent = b.time;
+      const fill = document.getElementById('vpFill');
+      fill.style.transition = 'none';
+      fill.style.width = '100%';
+      fill.offsetHeight;
+      fill.style.transition = 'width 40s linear';
+      fill.style.width = '0%';
+      vpToast.classList.add('show');
+      setTimeout(() => vpToast.classList.remove('show'), 9000);
+      toastIdx++;
+    }
+    setTimeout(() => { showToast(); setInterval(showToast, 40000); }, 5000);
+
+    // ── COUNTDOWN TIMER ──
+    function getExpiry() {
+      const key = 'jornalyze_expiry';
+      let expiry = localStorage.getItem(key);
+      if (!expiry) {
+        expiry = Date.now() + 24 * 60 * 60 * 1000;
+        localStorage.setItem(key, expiry);
+      }
+      return parseInt(expiry);
+    }
+    const expiry = getExpiry();
+    function updateTimers() {
+      const diff = Math.max(0, expiry - Date.now());
+      const h = Math.floor(diff / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      const pad = n => String(n).padStart(2, '0');
+      ['hours','o-hours'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = pad(h); });
+      ['minutes','o-minutes'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = pad(m); });
+      ['seconds','o-seconds'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = pad(s); });
+      const m2 = document.getElementById('m2'); const s2 = document.getElementById('s2');
+      if(m2) m2.textContent = pad(m); if(s2) s2.textContent = pad(s);
+    }
+    updateTimers();
+    setInterval(updateTimers, 1000);
+
+    // ── SCROLL REVEAL ──
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('visible'); } });
+    }, { threshold: 0.1 });
+    reveals.forEach(el => observer.observe(el));
+
+    // ── FAQ ACCORDION ──
+    document.querySelectorAll('.faq-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const content = btn.nextElementSibling;
+        const icon = btn.querySelector('.faq-icon');
+        const isOpen = !content.classList.contains('hidden');
+        document.querySelectorAll('.faq-content').forEach(c => c.classList.add('hidden'));
+        document.querySelectorAll('.faq-icon').forEach(i => i.classList.remove('rotate-180'));
+        if(!isOpen) { content.classList.remove('hidden'); icon.classList.add('rotate-180'); }
+      });
+    });
+
+    // ── JOURNAL MOCKUP SWITCH ──
+    const jmCaptions = {
+      risk: { icon:'⚖️', text:'<strong>Masalah yang diselesaikan:</strong> Lo nggak tahu harus pakai lot berapa dan SL sampai mana buat akun lo. Jawab 5 pertanyaan — semua langsung terhitung. <strong>Nggak perlu nebak-nebak lagi.</strong>' },
+      plan: { icon:'📅', text:'<strong>Masalah yang diselesaikan:</strong> Lo masuk market tanpa arah — pure feeling. Trading Plan Harian bikin lo punya bias, target profit, dan batas loss <strong>sebelum buka chart.</strong>' },
+      data: { icon:'📋', text:'<strong>Masalah yang diselesaikan:</strong> Lo ga punya catatan trade sama sekali. Tabel Data ini mencatat semua entri otomatis — kalkulasi pips, P/L, saldo — <strong>tanpa manual satu-satu.</strong>' },
+      filter: { icon:'🔍', text:'<strong>Masalah yang diselesaikan:</strong> Lo ga tahu session mana yang paling profit, pair mana yang harus difokuskan. Filter ini analisis data lo <strong>dan kasih jawabannya dalam grafik.</strong>' },
+      monthly: { icon:'📊', text:'<strong>Masalah yang diselesaikan:</strong> Lo ga pernah evaluasi sebulan sekali. Dashboard Bulanan kasih ringkasan lengkap — equity curve, win rate, worst day — <strong>semua otomatis terupdate.</strong>' }
+    };
+
+    function jmSwitch(id, tabEl) {
+      // Update external tab pills
+      document.querySelectorAll('.jm-tab').forEach(b => b.classList.remove('active'));
+      if (tabEl) tabEl.classList.add('active');
+
+      // Update internal topbar tabs
+      document.querySelectorAll('.jmv-ptab').forEach(b => b.classList.remove('active'));
+      const ptabs = document.querySelectorAll('.jmv-ptab');
+      const idxMap = { risk:0, plan:1, data:2, filter:3, monthly:4 };
+      if (ptabs[idxMap[id]]) ptabs[idxMap[id]].classList.add('active');
+
+      // Switch pages
+      document.querySelectorAll('.jmv-page').forEach(p => p.classList.remove('active'));
+      const pg = document.getElementById('jmvp-' + id);
+      if (pg) pg.classList.add('active');
+
+      // Update caption
+      const c = jmCaptions[id];
+      if (c) {
+        document.getElementById('jmCapIcon').textContent = c.icon;
+        document.getElementById('jmCapText').innerHTML = c.text;
+      }
+
+      // Init charts when filter/monthly tab opens
+      if (id === 'filter') initJmvFilterCharts();
+      if (id === 'monthly') initJmvMonthlyChart();
+    }
+
+    // ── CHART.JS INIT ──
+    function initJmvFilterCharts() {
+      if (document.getElementById('jmvChart1') && !document.getElementById('jmvChart1').dataset.init) {
+        document.getElementById('jmvChart1').dataset.init = '1';
+        try {
+          new Chart(document.getElementById('jmvChart1'), {
+            type: 'line',
+            data: {
+              labels: ['01 Apr','02 Apr','03 Apr','07 Apr','08 Apr','10 Apr','14 Apr','15 Apr','17 Apr','21 Apr'],
+              datasets: [
+                { label: 'Total Profit', data: [53950,103900,54708,133900,106516,200766,213046,340346,312746,402746], borderColor: '#22C55E', backgroundColor: 'rgba(34,197,94,0.08)', tension: 0.4, fill: true, pointRadius: 3 },
+                { label: 'Total Saldo', data: [5053950,5080546,5031354,5110654,5083270,5177520,5189900,5317300,5290000,5380000], borderColor: '#E8C567', backgroundColor: 'rgba(232,197,103,0.06)', tension: 0.4, fill: false, pointRadius: 3, yAxisID: 'y1' }
+              ]
+            },
+            options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+              plugins: { legend: { labels: { color: '#6A6050', font: { size: 10 } } } },
+              scales: {
+                x: { ticks: { color: '#6A6050', font: { size: 8 } }, grid: { color: 'rgba(255,255,255,0.03)' } },
+                y: { ticks: { color: '#6A6050', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+                y1: { position: 'right', ticks: { color: '#6A6050', font: { size: 9 } }, grid: { display: false } }
+              }
+            }
+          });
+          new Chart(document.getElementById('jmvChart2'), {
+            type: 'doughnut',
+            data: { labels: ['London','New York','Asia'], datasets: [{ data: [57, 29, 14], backgroundColor: ['#22C55E','#E84040','#60A5FA'], borderWidth: 0 }] },
+            options: { responsive: false, plugins: { legend: { display: false } }, cutout: '65%' }
+          });
+          new Chart(document.getElementById('jmvChart3'), {
+            type: 'bar',
+            data: {
+              labels: ['01','02','03','07','08','10','14','15','17','21'],
+              datasets: [{ label: 'P/L', data: [53950, 50050, -49192, 79300, -27384, 94250, 12380, 127400, -27300, 90000],
+                backgroundColor: d => d.raw >= 0 ? 'rgba(34,197,94,0.7)' : 'rgba(232,64,64,0.7)', borderRadius: 4 }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+              scales: { x: { ticks: { color: '#6A6050', font: { size: 8 } }, grid: { display: false } },
+                y: { ticks: { color: '#6A6050', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.04)' } } }
+            }
+          });
+          new Chart(document.getElementById('jmvChart4'), {
+            type: 'bar',
+            data: { labels: ['XAUUSD'], datasets: [{ label: 'P/L', data: [403454], backgroundColor: 'rgba(232,197,103,0.7)', borderRadius: 4 }] },
+            options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+              scales: { x: { ticks: { color: '#6A6050', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+                y: { ticks: { color: '#6A6050', font: { size: 10 } }, grid: { display: false } } }
+            }
+          });
+        } catch(e) { console.log('Chart init:', e); }
+      }
+    }
+
+    function initJmvMonthlyChart() {
+      if (document.getElementById('jmvChart5') && !document.getElementById('jmvChart5').dataset.init) {
+        document.getElementById('jmvChart5').dataset.init = '1';
+        try {
+          new Chart(document.getElementById('jmvChart5'), {
+            type: 'line',
+            data: {
+              labels: ['01 Apr','02 Apr','03 Apr','07 Apr','08 Apr','10 Apr','14 Apr','15 Apr','17 Apr','21 Apr'],
+              datasets: [{
+                label: 'Equity', fill: true,
+                data: [5053950, 5080546, 5031354, 5110654, 5083270, 5177520, 5189900, 5317300, 5290000, 5380000],
+                borderColor: '#22C55E', backgroundColor: 'rgba(34,197,94,0.08)', tension: 0.4, pointRadius: 4,
+                pointBackgroundColor: '#22C55E'
+              }]
+            },
+            options: { responsive: true, maintainAspectRatio: false,
+              plugins: { legend: { display: false } },
+              scales: {
+                x: { ticks: { color: '#6A6050', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.03)' } },
+                y: { ticks: { color: '#6A6050', font: { size: 9 }, callback: v => 'Rp ' + (v/1000000).toFixed(2) + 'M' }, grid: { color: 'rgba(255,255,255,0.04)' } }
+              }
+            }
+          });
+        } catch(e) { console.log('Monthly chart:', e); }
+      }
+    }
+  </script>
+</body>
+</html>
